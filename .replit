@@ -1,2 +1,2 @@
 language = "cpp"
-run = "./TP/bin/main"
+run = "./TP/bin/main.exe"
