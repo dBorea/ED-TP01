@@ -32,7 +32,7 @@ class LinkedList{
 		tipoT *getElemento(int);
 		void addElemento(tipoT); 
 		void addElementoOrdenado(tipoT);
-		void rmvElemento(); 									// Talvez não seja usada. Remover se necessário.
+		void rmvElemento(); 	// Talvez não seja usada. Remover se necessário.
 		void limpaLista();
 };
 

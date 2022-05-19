@@ -55,7 +55,6 @@ void LinkedList<tipoT>::addElementoOrdenado(tipoT novoElem){
 		if(nova->dimensao() < aux->prox->dimensao()){	// Verifica se a dimensão do novo elemento é menor que do elemento auxiliar atual
 			nova->prox = aux->prox;
 			aux->prox = nova;
-			ultima = nova;
 			tamanho++;
 			return;
 		}
