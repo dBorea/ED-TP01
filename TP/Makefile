@@ -8,16 +8,21 @@ INC = include
 BIN = bin
 OBJS = $(OBJ)/main.o $(OBJ)/listaEncadeada.o 
 HDRS = $(INC)/listaEncadeada.hpp $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp
-CFLAGS = -Wall -c -I$(INC) -g
+SANITIZE = #-fsanitize=undefined,address
+CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE)
+LDFLAGS = $(SANITIZE)
 MAIN = $(BIN)/main.exe
 
-#EXE = $(BIN)/
+EXE = $(BIN)/main.exe
 
 $(MAIN): $(OBJS)
-	$(CXX) -o $(MAIN) $(OBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $(MAIN) $(OBJS) $(LIBS)
 
 $(OBJ)/main.o: $(HDRS) $(SRC)/main.cpp
-	$(CXX) $(CFLAGS) -o $(OBJ)/main.o $(SRC)/main.cpp 
+	$(CXX) $(CXXFLAGS) -o $(OBJ)/main.o $(SRC)/main.cpp 
 
 $(OBJ)/listaEncadeada.o: $(HDRS) $(SRC)/listaEncadeada.cpp
-	$(CXX) $(CFLAGS) -o $(OBJ)/listaEncadeada.o $(SRC)/listaEncadeada.cpp
+	$(CXX) $(CXXFLAGS) -o $(OBJ)/listaEncadeada.o $(SRC)/listaEncadeada.cpp
+
+clean: 
+	rm -f $(EXE) $(OBJS) gmon.out

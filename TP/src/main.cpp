@@ -4,7 +4,7 @@
 
 using std::cout;
 using std::endl;
-
+ 
 int main(){
 	LinkedList<int> *listaDeInts = new LinkedList<int>();
 	cout << "Lista criada." << endl;
