@@ -1,5 +1,3 @@
-
-
 CXX = g++
 LIBS = 
 SRC = src
