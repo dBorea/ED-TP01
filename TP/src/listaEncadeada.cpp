@@ -13,7 +13,7 @@ int Celula<int>::dimensao(){
 template <typename tipoT>
 tipoT *LinkedList<tipoT>::getElemento(int id){
 	// Checagem de erro. Impede que a função rode caso 'id' seja maior que o permitido.
-	erroAssert(id >= 0, "Tentativa de procurar por um elemento de identificador menor ou igual a zero")
+	erroAssert(id > 0, "Tentativa de procurar por um elemento de identificador menor ou igual a zero");
 	erroAssert(id <= tamanho, "Tentativa de procurar por um elemento de identificador maior que o tamanho da lista");
 
 	Celula<tipoT> *aux = cabeca;
