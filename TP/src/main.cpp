@@ -55,24 +55,24 @@ int main(){
 	erroAssert(!inputFile.fail(), "Arquivo de entrada não pôde ser aberto");
 	ofstream outputFile("saida.txt");
 
-	inputFile >> input_nRodadas >> input_dinheiroBase;		// Recebe o número de rodadas totais e o dinheiro inicial de todos os jogadores
+	inputFile >> input_nRodadas >> input_dinheiroBase;							// Recebe o número de rodadas totais e o dinheiro inicial de todos os jogadores
 
-	for(int i=0; i < input_nRodadas; i++){					// Itera por cada rodada
-		inputFile >> input_nJogadas >> input_pingo;			// Recebe o número de jogadas da rodada e a aposta mínima de cada jogador
+	for(int i=0; i < input_nRodadas; i++){									// Itera por cada rodada
+		inputFile >> input_nJogadas >> input_pingo;							// Recebe o número de jogadas da rodada e a aposta mínima de cada jogador
 
-		for(int j=0; j < input_nJogadas; j++){				// Itera por cada linha(jogador) da rodada
-			inputFile >> input_nome >> input_aposta;		// Recebe o nome do jogador e sua aposta individual
-			if(mesa.possuiElemento(input_nome)){			// Verifica se o jogador já está na lista
-				if(!mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo))	// Desconta a aposta total do jogador
+		for(int j=0; j < input_nJogadas; j++){								// Itera por cada linha(jogador) da rodada
+			inputFile >> input_nome >> input_aposta;						// Recebe o nome do jogador e sua aposta individual
+			if(mesa.possuiElemento(input_nome)){							// Verifica se o jogador já está na lista
+				if(!mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo))		// Desconta a aposta total do jogador
 					continue;															// Invalida a rodada caso a aposta do jogador seja inválida // NÃO FUNCIONA!
 			} else {										// Adiciona o jogador e seu dinheiro inicial, descontando as apostas
 				mesa.addElemento(jogador(input_nome, input_dinheiroBase));
 				mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo);
 			}
-			mesa.getJogador(input_nome)->limpaMao();					// Limpa as cartas do jogador
-			for(int k=0; k<5; k++){								// Itera pelas cinco cartas do jogador
-				inputFile >> input_carta;						// Recebe a carta atual
-				mesa.getJogador(input_nome)->addCarta(input_carta);	// Adiciona a carta lida ao jogador atual
+			mesa.getJogador(input_nome)->limpaMao();						// Limpa as cartas do jogador
+			for(int k=0; k<5; k++){									// Itera pelas cinco cartas do jogador
+				inputFile >> input_carta;							// Recebe a carta atual
+				mesa.getJogador(input_nome)->addCarta(input_carta);				// Adiciona a carta lida ao jogador atual
 			}
 		}
 	}
