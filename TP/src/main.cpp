@@ -64,7 +64,7 @@ int main(){
 			inputFile >> input_nome >> input_aposta;						// Recebe o nome do jogador e sua aposta individual
 			if(mesa.possuiElemento(input_nome)){							// Verifica se o jogador já está na lista
 				if(!mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo))		// Desconta a aposta total do jogador
-					continue;															// Invalida a rodada caso a aposta do jogador seja inválida // NÃO FUNCIONA!
+					continue;								// Invalida a rodada caso a aposta do jogador seja inválida // NÃO FUNCIONA!
 			} else {										// Adiciona o jogador e seu dinheiro inicial, descontando as apostas
 				mesa.addElemento(jogador(input_nome, input_dinheiroBase));
 				mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo);
