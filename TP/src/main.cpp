@@ -69,7 +69,7 @@ int main(){
 				mesa.addElemento(jogador(input_nome, input_dinheiroBase));
 				mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo);
 			}
-			mesa.getJogador(input_nome)->limpaMao();					// Limpa as cartas do jogador
+			mesa.getJogador(input_nome)->limpaMao();			// Limpa as cartas do jogador
 			for(int k=0; k<5; k++){								// Itera pelas cinco cartas do jogador
 				inputFile >> input_carta;						// Recebe a carta atual
 				mesa.getJogador(input_nome)->addCarta(input_carta);	// Adiciona a carta lida ao jogador atual
