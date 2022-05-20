@@ -41,6 +41,7 @@ class jogador {
 		int ID;
 		string nome;
 		double dinheiro;
+		double apostaADebitar;
 		LinkedList<CartaDeBaralho> mao;
 	public:
 		// Construtor vazio. Inicia nome como "" e dinheiro como '0'.
@@ -53,13 +54,14 @@ class jogador {
 		double dimensao();
 		string getNome() { return nome; }
 		string ranqueDaMao();
+		void debitaAposta();
 		void addCarta(string carta);
 		void limpaMao();
 };
 
 int jogador::aposta(double quantia){
 	if(dinheiro - quantia >= 0){
-		dinheiro -= quantia;
+		apostaADebitar = quantia;
 		return 1;
 	}
 	return 0;
@@ -67,6 +69,11 @@ int jogador::aposta(double quantia){
 
 double jogador::dimensao(){
 	return dinheiro;
+}
+
+void jogador::debitaAposta(){
+	dinheiro -= apostaADebitar;
+	apostaADebitar = 0;
 }
 
 void jogador::addCarta(string carta){
