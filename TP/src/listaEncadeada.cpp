@@ -1,9 +1,35 @@
 #include "listaEncadeada.hpp"
 #include "msgassert.hpp"
+#include "jogador.hpp"
 
 template <>
 int Celula<int>::dimensao(){
 	return elem;
+}
+
+template <>
+int Celula<jogador>::getJogadorID(){
+	return elem.getID();
+}
+
+template <>
+string Celula<jogador>::getElemName(){
+	return elem.getNome();
+}
+
+template <>
+string Celula<CartaDeBaralho>::getElemName(){
+	return elem.getCarta();
+}
+
+template <typename tipoT>
+bool LinkedList<tipoT>::possuiElemento(string nome){
+	Celula<tipoT> *aux = cabeca->prox;
+	for(;aux!=nullptr;){
+		if(aux->getElemName() == nome) return true;
+		aux = aux->prox;
+	}
+	return false;
 }
  
 /// @brief Retorna o endereço do elemento da posição informada.
@@ -26,7 +52,24 @@ tipoT *LinkedList<tipoT>::getElemento(int id){
 	// Retorna o elemento tipoT elem encontrado.
 	return &aux->elem;
 }
-		
+
+/// @brief Retorna o endereço do jogador com o nome informado.
+/// 
+/// @tparam tipoT
+/// @param nome Número da célula na qual o elemento será buscado
+template <>
+jogador *LinkedList<jogador>::getJogador(string nome){
+	Celula<jogador> *aux = cabeca->prox;
+	
+	for(;aux!=nullptr;){
+		if(aux->getElemName() == nome) return &aux->elem;
+		aux = aux->prox;
+	}
+	
+	erroAssert(false, "Não foi possível encontrar o jogador");
+	return nullptr;
+}
+
 /// @brief Adiciona um novo elemento à lista na última posição
 /// 
 /// @tparam tipoT 

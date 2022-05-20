@@ -1,6 +1,10 @@
 #ifndef LISTAENCADEADA
 #define LISTAENCADEADA
 
+#include <string>
+
+using std::string;
+
 template <typename tipoT> class Celula;
 template <typename tipoT> class LinkedList;
 
@@ -12,6 +16,8 @@ class Celula{
 	public:
 		Celula() { prox = nullptr; }
 		int dimensao();
+		int getJogadorID();
+		string getElemName();
 	friend class LinkedList<tipoT>;
 };
 
@@ -29,8 +35,10 @@ class LinkedList{
 		~LinkedList() { limpaLista(); delete cabeca; }
 		int getTamanho() { return tamanho; }
 		bool estaVazia() { return tamanho == 0; }
+		bool possuiElemento(string);
 		tipoT *getElemento(int);
-		void addElemento(tipoT); 
+		tipoT *getJogador(string);
+		void addElemento(tipoT);
 		void addElementoOrdenado(tipoT);
 		void rmvElemento(); 	// Talvez não seja usada. Remover se necessário.
 		void limpaLista();

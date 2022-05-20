@@ -38,6 +38,7 @@ Thiago 450 */
 // Caso não receba parâmetros, inicia nome e dinheiro com "" e 0.
 class jogador {
 	private:
+		int ID;
 		string nome;
 		double dinheiro;
 		LinkedList<CartaDeBaralho> mao;
@@ -46,10 +47,35 @@ class jogador {
 		jogador() : nome(""), dinheiro(0) {}
 		// Construtor simples
 		jogador(string _nome, double _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
-		string getNome() { return nome; }
-		double dimensao();
-		string ranqueDaMao();
+		int getID() { return ID; }
 		int maiorCarta();
+		int aposta(double);
+		double dimensao();
+		string getNome() { return nome; }
+		string ranqueDaMao();
+		void addCarta(string carta);
+		void limpaMao();
 };
+
+int jogador::aposta(double quantia){
+	if(dinheiro - quantia >= 0){
+		dinheiro -= quantia;
+		return 1;
+	}
+	return 0;
+}
+
+double jogador::dimensao(){
+	return dinheiro;
+}
+
+void jogador::addCarta(string carta){
+	mao.addElementoOrdenado(CartaDeBaralho(carta));
+}
+
+void jogador::limpaMao(){
+	mao.limpaLista();
+}
+
 
 #endif
