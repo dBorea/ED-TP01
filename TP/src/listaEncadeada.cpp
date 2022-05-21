@@ -8,11 +8,6 @@ int Celula<int>::dimensao(){
 }
 
 template <>
-int Celula<jogador>::getJogadorID(){
-	return elem.getID();
-}
-
-template <>
 string Celula<jogador>::getElemName(){
 	return elem.getNome();
 }
