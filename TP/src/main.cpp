@@ -48,7 +48,7 @@ int main(){
 	LinkedList<jogador> mesa;
 
 	int input_nRodadas = 0, input_nJogadas = 0;
-	double input_pingo = 0, input_aposta = 0, input_dinheiroBase = 0, input_premioDaRodada = 0;
+	double input_pingo = 0, input_aposta = 0, input_dinheiroBase = 0, premioDaRodada = 0;
 	string input_nome, input_carta;
 
 	ifstream inputFile("entrada.txt");
@@ -62,16 +62,17 @@ int main(){
 
 		for(int j=0; j < input_nJogadas; j++){				// Itera por cada linha(jogador) da rodada
 			inputFile >> input_nome >> input_aposta;		// Recebe o nome do jogador e sua aposta individual
-			// CASO O JOGADOR NÃO ESTEJA NA LISTA AINDA
+
+			// CASO O JOGADOR NÃO ESTEJA NA LISTA
 			if(!mesa.possuiElemento(input_nome)){ mesa.addElemento(jogador(input_nome, input_dinheiroBase)); }
 			
-			if(!mesa.getJogador(input_nome)->setAposta(input_aposta + input_pingo)){	// Desconta a aposta total do jogador e checa a validez da mesma
-				input_premioDaRodada = 0;
-				mesa.limpaApostas(); // PINGO PROCESSADO SEPARADAMENTE? 
+			if(!mesa.getJogador(input_nome)->setAposta(input_aposta)){	// Desconta a aposta total do jogador e checa a validez da mesma
+				premioDaRodada = 0;
+				mesa.limpaApostas();
 				continue;															// Invalida a rodada caso a aposta do jogador seja inválida
 			}
 
-			input_premioDaRodada += (input_aposta + input_pingo);
+			premioDaRodada += (input_aposta + input_pingo);
 
 			mesa.getJogador(input_nome)->limpaMao();					// Limpa as cartas do jogador
 			for(int k=0; k<5; k++){								// Itera pelas cinco cartas do jogador
