@@ -62,13 +62,17 @@ int main(){
 
 		for(int j=0; j < input_nJogadas; j++){				// Itera por cada linha(jogador) da rodada
 			inputFile >> input_nome >> input_aposta;		// Recebe o nome do jogador e sua aposta individual
-			if(mesa.possuiElemento(input_nome)){			// Verifica se o jogador já está na lista
-				if(!mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo))	// Desconta a aposta total do jogador
-					continue;															// Invalida a rodada caso a aposta do jogador seja inválida // NÃO FUNCIONA!
-			} else {										// Adiciona o jogador e seu dinheiro inicial, descontando as apostas
-				mesa.addElemento(jogador(input_nome, input_dinheiroBase));
-				mesa.getJogador(input_nome)->aposta(input_aposta + input_pingo);
+			// CASO O JOGADOR NÃO ESTEJA NA LISTA AINDA
+			if(!mesa.possuiElemento(input_nome)){ mesa.addElemento(jogador(input_nome, input_dinheiroBase)); }
+			
+			if(!mesa.getJogador(input_nome)->setAposta(input_aposta + input_pingo)){	// Desconta a aposta total do jogador e checa a validez da mesma
+				input_premioDaRodada = 0;
+				mesa.limpaApostas(); // PINGO PROCESSADO SEPARADAMENTE? 
+				continue;															// Invalida a rodada caso a aposta do jogador seja inválida
 			}
+
+			input_premioDaRodada += (input_aposta + input_pingo);
+
 			mesa.getJogador(input_nome)->limpaMao();					// Limpa as cartas do jogador
 			for(int k=0; k<5; k++){								// Itera pelas cinco cartas do jogador
 				inputFile >> input_carta;						// Recebe a carta atual

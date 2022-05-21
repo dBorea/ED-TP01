@@ -22,6 +22,33 @@ string Celula<CartaDeBaralho>::getElemName(){
 	return elem.getCarta();
 }
 
+/// @brief Retorna o endereço do jogador com o nome informado.
+/// 
+/// @tparam tipoT
+/// @param nome Número da célula na qual o elemento será buscado
+template <>
+jogador *LinkedList<jogador>::getJogador(string nome){
+	Celula<jogador> *aux = cabeca->prox;
+	
+	for(;aux!=nullptr;){
+		if(aux->getElemName() == nome) return &aux->elem;
+		aux = aux->prox;
+	}
+	
+	erroAssert(false, "Não foi possível encontrar o jogador");
+	return nullptr;
+}
+
+template<>
+void LinkedList<jogador>::limpaApostas(){
+	Celula<jogador> *aux = cabeca->prox;
+
+	for(;aux!=nullptr;){
+		aux->elem.setAposta(0);
+		aux = aux->prox;
+	}	
+}
+
 template <typename tipoT>
 bool LinkedList<tipoT>::possuiElemento(string nome){
 	Celula<tipoT> *aux = cabeca->prox;
@@ -51,23 +78,6 @@ tipoT *LinkedList<tipoT>::getElemento(int id){
 	}
 	// Retorna o elemento tipoT elem encontrado.
 	return &aux->elem;
-}
-
-/// @brief Retorna o endereço do jogador com o nome informado.
-/// 
-/// @tparam tipoT
-/// @param nome Número da célula na qual o elemento será buscado
-template <>
-jogador *LinkedList<jogador>::getJogador(string nome){
-	Celula<jogador> *aux = cabeca->prox;
-	
-	for(;aux!=nullptr;){
-		if(aux->getElemName() == nome) return &aux->elem;
-		aux = aux->prox;
-	}
-	
-	erroAssert(false, "Não foi possível encontrar o jogador");
-	return nullptr;
 }
 
 /// @brief Adiciona um novo elemento à lista na última posição

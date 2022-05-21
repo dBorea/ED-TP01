@@ -41,6 +41,7 @@ class LinkedList{
 		void addElemento(tipoT);
 		void addElementoOrdenado(tipoT);
 		void rmvElemento(); 	// Talvez não seja usada. Remover se necessário.
+		void limpaApostas();
 		void limpaLista();
 };
 

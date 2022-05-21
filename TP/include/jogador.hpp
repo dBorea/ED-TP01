@@ -50,7 +50,7 @@ class jogador {
 		jogador(string _nome, double _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
 		int getID() { return ID; }
 		int maiorCarta();
-		int aposta(double);
+		int setAposta(double);
 		double dimensao();
 		string getNome() { return nome; }
 		string ranqueDaMao();
@@ -59,7 +59,7 @@ class jogador {
 		void limpaMao();
 };
 
-int jogador::aposta(double quantia){
+int jogador::setAposta(double quantia){
 	if(dinheiro - quantia >= 0){
 		apostaADebitar = quantia;
 		return 1;
