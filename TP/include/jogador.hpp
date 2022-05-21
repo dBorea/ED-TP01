@@ -38,7 +38,6 @@ Thiago 450 */
 // Caso não receba parâmetros, inicia nome e dinheiro com "" e 0.
 class jogador {
 	private:
-		int ID;
 		string nome;
 		double dinheiro;
 		double apostaADebitar;
@@ -48,7 +47,6 @@ class jogador {
 		jogador() : nome(""), dinheiro(0) {}
 		// Construtor simples
 		jogador(string _nome, double _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
-		int getID() { return ID; }
 		int maiorCarta();
 		int setAposta(double);
 		double dimensao();
