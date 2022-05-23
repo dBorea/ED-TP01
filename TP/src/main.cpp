@@ -13,7 +13,7 @@ using std::string;
 
 
 void testaCarta(){
-	CartaDeBaralho cartaTeste("13C");
+	cartaDeBaralho cartaTeste("13C");
 	cartaTeste.printCarta();
 	cartaTeste.setCarta("1S");
 	cartaTeste.printCarta();

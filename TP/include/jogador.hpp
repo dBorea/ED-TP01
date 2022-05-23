@@ -9,7 +9,7 @@
 // Caso não receba parâmetros, inicia nome e dinheiro com "" e 0.
 class jogador {
 	private:
-		CartaDeBaralho mao[NUM_CARTAS];
+		cartaDeBaralho mao[NUM_CARTAS];
 		string nome;
 		int dinheiro;
 		int apostaADebitar;
@@ -36,7 +36,7 @@ class jogador {
 /// 
 /// @param carta 
 void jogador::addCarta(string const& carta){
-	CartaDeBaralho novaCarta(carta);
+	cartaDeBaralho novaCarta(carta);
 	int i, index, insertPos;
 
 	for(index=0; novaCarta.getNum()<mao[index].getNum(); index++);	// [8] [6] [5] [2] [0] : Itera por mão[] até achar a posição de inserção
