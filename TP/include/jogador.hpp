@@ -1,63 +1,61 @@
-/* EXEMPLO DE ENTRADA:
-3 1000 								-- Rodadas, dinheiro inicial dos participantes
-5 50								-- Jogadas da rodada, pingo da rodada
-Giovanni 100 6O 3P 10E 11O 1O		-- Jogador, aposta do jogador, mão do jogador (5 cartas)
-John 200 3P 4E 3E 13C 13O
-Thiago 100 12O 7P 12C 1O 13C
-Gisele 300 12E 10C 11C 9C 13E
-Wagner 50 5P 12P 5E 2E 1P
-2 50
-Wagner 200 2P 13E 9E 12C 2O
-Gisele 350 11P 9P 2E 6E 4P
-3 100
-Thiago 250 1O 4P 1E 3O 8O
-Gisele 100 9C 8C 8C 2C 6C
-Giovanni 150 4P 12P 8E 12E 2P */
-
-/* EXEMPLO DE SAÍDA:
-1 1000 S
-Gisele
-1 200 OP
-Wagner
-1 1000 F
-Gisele
-####
-Gisele 2050
-Clodoveu 1350
-John Holiver 600
-Giovanni 550
-Thiago 450 */
-
 #ifndef JOGADOR
 #define JOGADOR
 
-#include "listaEncadeada.hpp"
 #include "cartaDeBaralho.hpp"
+
+#define NUM_CARTAS 5
 
 // Classe Jogador. Possui STRING nome, DOUBLE dinheiro e MAODECARTAS mao.
 // Caso não receba parâmetros, inicia nome e dinheiro com "" e 0.
 class jogador {
 	private:
+		CartaDeBaralho mao[NUM_CARTAS];
 		string nome;
-		double dinheiro;
-		double apostaADebitar;
-		LinkedList<CartaDeBaralho> mao;
+		int dinheiro;
+		int apostaADebitar;
+
 	public:
 		// Construtor vazio. Inicia nome como "" e dinheiro como '0'.
 		jogador() : nome(""), dinheiro(0) {}
 		// Construtor simples
-		jogador(string _nome, double _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
-		int maiorCarta();
-		int setAposta(double);
-		double dimensao();
-		string getNome() { return nome; }
-		string ranqueDaMao();
-		void debitaAposta();
+		jogador(string _nome, int _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
 		void addCarta(string carta);
+
+		string getNome() { return nome; }
+		int dimensao() { return dinheiro; }
+		bool setAposta(int);
+		void debitaAposta();
+
+		int maiorCarta();
+		string ranqueDaMao();
 		void limpaMao();
+	friend class mesaDePoker;
 };
 
-int jogador::setAposta(double quantia){
+/// @brief Adiciona uma carta à mão do jogador, ordenada de maior para menor
+/// 
+/// @param carta 
+void jogador::addCarta(string carta){
+	CartaDeBaralho novaCarta(carta);
+	int i, index, insertPos;
+
+	for(index=0; novaCarta.getNum()<mao[index].getNum(); index++);	// [8] [6] [5] [2] [0] : Itera por mão[] até achar a posição de inserção
+	insertPos = index;												// [4]----------^ 	   => index = 3 (exemplo)
+
+	for(index=0; mao[index].getNum()!=0; index++);					// [8] [6] [5] [2] [0] : Itera por mão[] até achar a primeira posição com elemento nulo
+																	// [index]----------^  => index = 4 (exemplo)
+
+	for(i=NUM_CARTAS-1; i>index; i--)								// [8] [6] [5] [2] [2] : Itera por mão[] entre a primeira posição de elemento nulo 
+		mao[i] = mao[i-1];											// 				^--[4] : e a posição de inserção, preparando para a inserção
+
+	mao[insertPos] = novaCarta;										// [8] [6] [5] [4] [2] : Insere o novo elemento
+}
+
+/// @brief Define a aposta do jogador
+/// 
+/// @param quantia 
+/// @return true / false
+bool jogador::setAposta(int quantia){
 	if(dinheiro - quantia >= 0){
 		apostaADebitar = quantia;
 		return 1;
@@ -65,22 +63,18 @@ int jogador::setAposta(double quantia){
 	return 0;
 }
 
-double jogador::dimensao(){
-	return dinheiro;
-}
-
+/// @brief Aplica as apostas do jogador
 void jogador::debitaAposta(){
 	dinheiro -= apostaADebitar;
 	apostaADebitar = 0;
 }
 
-void jogador::addCarta(string carta){
-	mao.addElementoOrdenado(CartaDeBaralho(carta));
-}
-
+/// @brief Limpa as cartas, retornando-as ao estado de criação 
 void jogador::limpaMao(){
-	mao.limpaLista();
+	for(int i=0; i<NUM_CARTAS; i++){
+		mao[i].setNaipe("");
+		mao[i].setNum(0);
+	}
 }
-
 
 #endif
