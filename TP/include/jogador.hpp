@@ -19,15 +19,15 @@ class jogador {
 		jogador() : nome(""), dinheiro(0) {}
 		// Construtor simples
 		jogador(string _nome, int _dinheiro) : nome(_nome), dinheiro(_dinheiro) {}
-		void addCarta(string carta);
+		void addCarta(string const&);
 
-		string getNome() { return nome; }
-		int dimensao() { return dinheiro; }
-		bool setAposta(int);
+		string getNome() const { return nome; }
+		int dimensao() const { return dinheiro; }
+		int maiorCarta() const;
+		int ranqueDaMao() const;
+
+		bool setAposta(int, int);
 		void debitaAposta();
-
-		int maiorCarta();
-		string ranqueDaMao();
 		void limpaMao();
 	friend class mesaDePoker;
 };
@@ -35,7 +35,7 @@ class jogador {
 /// @brief Adiciona uma carta à mão do jogador, ordenada de maior para menor
 /// 
 /// @param carta 
-void jogador::addCarta(string carta){
+void jogador::addCarta(string const& carta){
 	CartaDeBaralho novaCarta(carta);
 	int i, index, insertPos;
 
@@ -45,7 +45,7 @@ void jogador::addCarta(string carta){
 	for(index=0; mao[index].getNum()!=0; index++);					// [8] [6] [5] [2] [0] : Itera por mão[] até achar a primeira posição com elemento nulo
 																	// [index]----------^  => index = 4 (exemplo)
 
-	for(i=NUM_CARTAS-1; i>index; i--)								// [8] [6] [5] [2] [2] : Itera por mão[] entre a primeira posição de elemento nulo 
+	for(i=index; i>insertPos; i--)									// [8] [6] [5] [2] [2] : Itera por mão[] entre a primeira posição de elemento nulo 
 		mao[i] = mao[i-1];											// 				^--[4] : e a posição de inserção, preparando para a inserção
 
 	mao[insertPos] = novaCarta;										// [8] [6] [5] [4] [2] : Insere o novo elemento
@@ -55,8 +55,8 @@ void jogador::addCarta(string carta){
 /// 
 /// @param quantia 
 /// @return true / false
-bool jogador::setAposta(int quantia){
-	if(dinheiro - quantia >= 0){
+bool jogador::setAposta(int quantia, int pingo){
+	if(dinheiro - quantia - pingo >= 0){
 		apostaADebitar = quantia;
 		return 1;
 	}
@@ -67,6 +67,19 @@ bool jogador::setAposta(int quantia){
 void jogador::debitaAposta(){
 	dinheiro -= apostaADebitar;
 	apostaADebitar = 0;
+}
+
+/// @brief Retorna o número da maior carta do jogador. Caso o jogador não tenha cartas suficientes, retorna -1.
+/// 
+/// @return int 
+int  jogador::maiorCarta() const {
+	if(mao[4].getNum() != 0)
+		return mao[0].getNum();
+	return -1;
+}
+
+int  jogador::ranqueDaMao() const {
+	
 }
 
 /// @brief Limpa as cartas, retornando-as ao estado de criação 
