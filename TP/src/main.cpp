@@ -24,7 +24,13 @@ void instrucoes(){
 }
 
 int main(){
+	mesaDePoker mesa;
 
+	ifstream inputFile("entrada.txt");
+	erroAssert(!inputFile.fail(), "Arquivo de entrada não pôde ser aberto");
+	ofstream outputFile("saida.txt");
+
+	mesa.processaJogo(&inputFile);
 	//testaCarta();
 	return 0;
 }

@@ -24,6 +24,10 @@ class jogador {
 		string getNome() const { return nome; }
 		int dimensao() const { return dinheiro; }
 		int maiorCarta() const;
+
+		bool isStraight() const;
+		bool isFlush() const;
+		int *numRepetidas() const;
 		int ranqueDaMao() const;
 
 		bool setAposta(int, int);
@@ -55,7 +59,7 @@ void jogador::addCarta(string const& carta){
 /// 
 /// @param quantia 
 /// @return true / false
-bool jogador::setAposta(int quantia, int pingo){
+bool jogador::setAposta(int quantia, int pingo = 0){
 	if(dinheiro - quantia - pingo >= 0){
 		apostaADebitar = quantia;
 		return 1;
@@ -76,6 +80,44 @@ int  jogador::maiorCarta() const {
 	if(mao[4].getNum() != 0)
 		return mao[0].getNum();
 	return -1;
+}
+
+bool jogador::isStraight() const{
+	int cartasAChecar = (mao[NUM_CARTAS-2].getNum()==10 && mao[NUM_CARTAS-1].getNum()==1)? NUM_CARTAS-1 : NUM_CARTAS;
+	for(int i=0; i<cartasAChecar; i++)
+		if(mao[i].getNum() != mao[0].getNum()-i)
+			return false;
+	return true;
+}
+
+bool jogador::isFlush() const{
+	string naipeCmp = mao[0].getNaipe();
+	for(int i=1; i<NUM_CARTAS; i++)
+		if(mao[i].getNaipe() != naipeCmp)
+			return false;
+	return true;
+}
+
+int *jogador::numRepetidas() const {
+	short combo;
+	bool identificada[NUM_CARTAS] = {0};
+	int combos[NUM_CARTAS] = {0};
+
+	for(int i=0; i<NUM_CARTAS; i++){
+		combo = 0;
+		if(!identificada[i]){
+			identificada[i] = true;
+			combo = 1;
+			for(int j=1; j<NUM_CARTAS; j++){
+				if((!identificada[j]) && (mao[i].getNum() == mao[j].getNum())){
+					identificada[j] = true;
+					combo++;
+				}
+			}
+			combos[combo-1]++;
+		}
+	}
+	return combos;
 }
 
 int  jogador::ranqueDaMao() const {

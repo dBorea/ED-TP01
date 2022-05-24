@@ -1,6 +1,7 @@
 #ifndef MESADEPOKER
 #define MESADEPOKER
 
+#include <fstream>
 #include <sstream>
 #include <iterator>
 #include "jogador.hpp"
@@ -10,6 +11,7 @@
 #define NUM_ARGS 6
 
 using std::ifstream;
+using std::ofstream;
 using std::stringstream;
 using std::istringstream;
 using std::istream_iterator;
@@ -23,21 +25,22 @@ class mesaDePoker{
 		int premioDaRodada;
 		int dinheiroBase;
 		int pingo;
-		int nRodadas;
-		int nJogadas;
 
 		bool rodadaValida;
 	
 	public:
 		mesaDePoker() : jogadores(nullptr), numJogadores(0), premioDaRodada(0), dinheiroBase(0), 
-						pingo(0), nRodadas(0), nJogadas(0), rodadaValida(true) {} // talvez transformar construtor para receber istream
+						pingo(0), rodadaValida(true) {} // talvez transformar construtor para receber istream
 		void adicionaJogador(string, int);
 
 		jogador *getJogador(string const&) const;
 		bool possuiJogador(string const&) const; // Talvez não use
-		bool analisaLinha(string const&, bool);
+		void analisaLinha(string const&, bool);
 		void processaRodada();
 		void ordenaJogadores();
+
+		ofstream escreveOutput();
+		ofstream processaJogo(ifstream*);
 
 };
 
@@ -67,7 +70,7 @@ bool mesaDePoker::possuiJogador(string const& nome) const{	// Talvez não use
 	return false;								// E 'false' caso contrário
 }
 
-bool mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
+void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada = false){
 	istringstream stream(linha);
 	string nome("");
 	string tempString;
@@ -94,15 +97,46 @@ bool mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 		jogadorAtual->addCarta(tempString);
 	}
 
-	return rodadaValida;									// Retorna a validez da rodada
+	return;
 }
 
 void mesaDePoker::processaRodada(){
-
+	for(int i=0; i<numJogadores; i++){
+		jogadores[i].debitaAposta();
+		jogadores[i].setAposta(0);
+	}
+	//fazer alguma coisa com ranque das maos
 }
 
 void mesaDePoker::ordenaJogadores(){
 
+}
+
+ofstream mesaDePoker::escreveOutput(){
+
+}
+
+ofstream mesaDePoker::processaJogo(ifstream *input){
+	int nRodadas, nJogadas;
+	string linha;
+	*input >> nRodadas >> dinheiroBase;
+	
+	for(int i=0; i < nRodadas; i++){
+		*input >> nJogadas >> pingo;
+
+		for(int j=0; j < nJogadas; j++){
+			getline(*input, linha);
+			analisaLinha(linha,(j==0));
+		}
+
+		if(rodadaValida)
+			processaRodada();
+		rodadaValida = true;
+	}
+
+	ordenaJogadores();
+
+	return escreveOutput();
 }
 
 #endif
