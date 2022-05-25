@@ -4,9 +4,9 @@ SRC = src
 OBJ = obj
 INC = include
 BIN = bin
-OBJS = $(OBJ)/main.o $(OBJ)/listaEncadeada.o 
-HDRS = $(INC)/listaEncadeada.hpp $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp
-SANITIZE = #-fsanitize=undefined,address
+OBJS = $(OBJ)/main.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o
+HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp
+SANITIZE = -fsanitize=undefined,address
 CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE)
 LDFLAGS = $(SANITIZE)
 MAIN = $(BIN)/main.exe
@@ -19,8 +19,11 @@ $(MAIN): $(OBJS)
 $(OBJ)/main.o: $(HDRS) $(SRC)/main.cpp
 	$(CXX) $(CXXFLAGS) -o $(OBJ)/main.o $(SRC)/main.cpp 
 
-$(OBJ)/listaEncadeada.o: $(HDRS) $(SRC)/listaEncadeada.cpp
-	$(CXX) $(CXXFLAGS) -o $(OBJ)/listaEncadeada.o $(SRC)/listaEncadeada.cpp
+$(OBJ)/jogador.o: $(HDRS) $(SRC)/jogador.cpp
+	$(CXX) $(CXXFLAGS) -o $(OBJ)/jogador.o $(SRC)/jogador.cpp
+
+$(OBJ)/mesaDePoker.o: $(HDRS) $(SRC)/mesaDePoker.cpp
+	$(CXX) $(CXXFLAGS) -o $(OBJ)/mesaDePoker.o $(SRC)/mesaDePoker.cpp
 
 clean: 
 	rm -f $(EXE) $(OBJS) gmon.out
