@@ -24,10 +24,9 @@ void jogador::addCarta(string const& carta){
 /// @param quantia 
 /// @return true / false
 bool jogador::setAposta(int quantia){
-	if(dinheiro - quantia >= 0){
-		apostaADebitar = quantia;
+	apostaADebitar = quantia;
+	if(dinheiro - quantia >= 0)
 		return 1;
-	}
 	return 0;
 }
 
@@ -37,35 +36,39 @@ void jogador::debitaAposta(){
 	apostaADebitar = 0;
 }
 
-/// @brief Retorna o número da maior carta do jogador. Caso o jogador não tenha cartas suficientes, retorna -1.
+/// @brief Retorna o número da maior carta do jogador.
 /// 
 /// @return int 
 int  jogador::maiorCarta() const {
 	if(mao[4].getNum() != 0)
 		return mao[0].getNum();
-	return -1;
+	return 0;
 }
 
-bool jogador::isStraight() const{
+bool jogador::checkStraight(){
 	int cartasAChecar = (mao[NUM_CARTAS-2].getNum()==10 && mao[NUM_CARTAS-1].getNum()==1)? NUM_CARTAS-1 : NUM_CARTAS;
 	for(int i=0; i<cartasAChecar; i++)
 		if(mao[i].getNum() != mao[0].getNum()-i)
 			return false;
+	if(cartasAChecar==NUM_CARTAS-1)
+		maiorCartaDaJogada = 14;
+	maiorCartaDaJogada = maiorCarta();
 	return true;
 }
 
-bool jogador::isFlush() const{
+bool jogador::checkFlush(){
 	string naipeCmp = mao[0].getNaipe();
 	for(int i=1; i<NUM_CARTAS; i++)
 		if(mao[i].getNaipe() != naipeCmp)
 			return false;
+	maiorCartaDaJogada = maiorCarta();
 	return true;
 }
 
-int *jogador::numRepetidas() const {
+repCounters jogador::numRepetidas(){
 	short combo;
 	bool identificada[NUM_CARTAS] = {0};
-	int *combos = new int[NUM_CARTAS] {0};
+	int combos[NUM_CARTAS] {0};
 
 	for(int i=0; i<NUM_CARTAS; i++){
 		combo = 0;
@@ -78,14 +81,54 @@ int *jogador::numRepetidas() const {
 					combo++;
 				}
 			}
+			if(combo==1 && mao[i].getNum() > maiorCartaIsolada) maiorCartaIsolada = mao[i].getNum();
+			if(combo!=1 && mao[i].getNum() > maiorCartaDaJogada) maiorCartaDaJogada = mao[i].getNum();
 			combos[combo-1]++;
 		}
 	}
-	return combos;
+
+	if(combos[quadra]) return quadra;
+	if(combos[par]){ if(combos[trinca]) return trincaEPar;
+					 if(combos[par]==2) return doisPares;
+										return par;
+	}
+	return unica;
 }
 
-int jogador::ranqueDaMao() const {
-	return 0;
+bool jogador::checkRoyal() const {
+	if(mao[0].getNum()==13 &&
+	   mao[1].getNum()==12 &&
+	   mao[2].getNum()==11 &&
+	   mao[3].getNum()==10 &&
+	   mao[4].getNum()==1)
+	   return true;
+	return false;
+}
+
+rankings jogador::ranqueDaMao(){
+
+	bool isFlush = checkFlush();
+	bool isStraight = checkStraight();
+
+	if(isStraight && isFlush) return (checkRoyal())? royal_straight_flush : straight_flush;
+	if(isStraight) 			  return straight;
+	if(isFlush)				  return flush;
+	switch(numRepetidas()){
+		case quadra:
+			return four_of_a_kind;
+		case trincaEPar:
+			return full_house;
+		case trinca:
+			return three_of_a_kind;
+		case doisPares:
+			return two_pairs;
+		case par:
+			return one_pair;
+		case unica:
+			return high_card;
+		default:
+			return invalid;
+	}
 }
 
 /// @brief Limpa as cartas, retornando-as ao estado de criação 
@@ -94,4 +137,6 @@ void jogador::limpaMao(){
 		mao[i].setNaipe("");
 		mao[i].setNum(0);
 	}
+	maiorCartaDaJogada = 0;
+	maiorCartaIsolada = 0;
 }

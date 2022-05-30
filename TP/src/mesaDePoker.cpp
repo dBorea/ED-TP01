@@ -34,6 +34,7 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	int tempInt;
 
 	for(int i=0; i<numDePalavras(linha)-NUM_ARGS; i++){		// Recebe o nome completo do jogador
+		if(i>0) nome.append(" ");
 		stream >> tempString;
 		nome.append(tempString);
 	}
@@ -48,7 +49,6 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
 	premioDaRodada += tempInt + pingo;
 
-	jogadorAtual->limpaMao();
 	for(int i=0; i<NUM_CARTAS; i++){						// Lê e armazena as cartas do jogador atual
 		stream >> tempString;
 		jogadorAtual->addCarta(tempString);
@@ -57,8 +57,29 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	return;
 }
 
-void mesaDePoker::processaRodada(){
-	bool vencedores[numJogadores] = {0, 1, 0};
+void mesaDePoker::escreveOutputRodada(ofstream *output, bool vencedores[], int nVencedores){
+	
+	*output << nVencedores << " "
+			<< premioDaRodada/nVencedores << " "
+			<< rankVencedor << endl;
+	for (int i=0; i<numJogadores; i++){
+		if(vencedores[i]==true)
+			*output << jogadores[i].getNome() << endl;
+	}
+}
+
+void mesaDePoker::processaRodada(ofstream *output){
+
+	if(!rodadaValida){
+		*output << 0 << " " << 0 << " " << "I" << endl;
+		return;
+	}
+
+	int numVencedores = 0;
+	int maiorCartaJogada = 0, maiorCartaSolta = 0;
+	bool vencedores[numJogadores] = {false};
+	rankings rankAtual = invalid;
+	rankings maiorRank = invalid;
 	if(!rodadaValida){
 		numVencedores=0;
 		rankVencedor="";
@@ -70,14 +91,104 @@ void mesaDePoker::processaRodada(){
 		jogadores[i].debitaAposta();
 		jogadores[i].setAposta(0);
 	}
-	//fazer alguma coisa com ranque das maos
-	numVencedores = 1; // ?
-	rankVencedor = "ablublublu";
+
 	for(int i=0; i<numJogadores; i++){
-		if(vencedores[i])
+		rankAtual = jogadores[i].ranqueDaMao();
+
+		if(rankAtual > maiorRank){
+			for(int j=0; j<i; j++)
+				vencedores[j] = false;
+			maiorRank = rankAtual;
+			vencedores[i] = true;
+			numVencedores = 1;
+		} 
+		
+		else if (rankAtual == maiorRank){
+			vencedores[i] = true;
+			numVencedores++;
+		}
+	}
+	
+	for(int i=0; i<numJogadores; i++){
+		if(vencedores[i]==true){
+			if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
+				for(int j=0; j<i; j++){
+					if(vencedores[j]==true){
+						vencedores[j] = false;
+						numVencedores--;
+					}
+				}
+				maiorCartaJogada = jogadores[i].getMaiorCartaDaJogada();
+			} 
+			
+			else if(jogadores[i].getMaiorCartaDaJogada() < maiorCartaJogada){
+				vencedores[i] = false;
+				numVencedores --;
+			}
+		}
+	}
+	
+	for(int i=0; i<numJogadores; i++){
+		if(vencedores[i]==true){
+			if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
+				for(int j=0; j<i; j++){
+					if(vencedores[j]==true){
+						vencedores[j] = false;
+						numVencedores--;
+					}
+				}
+				maiorCartaSolta = jogadores[i].getMaiorCartaIsolada();
+			} 
+			
+			else if(jogadores[i].getMaiorCartaIsolada() < maiorCartaSolta){
+				vencedores[i] = false;
+				numVencedores --;
+			}
+		}
+	}
+
+	switch(maiorRank){
+		case high_card:
+			rankVencedor ="HC";
+			break;
+		case one_pair:
+			rankVencedor ="OP";
+			break;
+		case two_pairs:
+			rankVencedor ="TP";
+			break;
+		case three_of_a_kind:
+			rankVencedor ="TK";
+			break;
+		case straight:
+			rankVencedor ="S";
+			break;
+		case flush:
+			rankVencedor ="F";
+			break;
+		case full_house:
+			rankVencedor ="FH";
+			break;
+		case four_of_a_kind:
+			rankVencedor ="FK";
+			break;
+		case straight_flush:
+			rankVencedor ="SF";
+			break;
+		case royal_straight_flush:
+			rankVencedor ="RSF";
+			break;
+		default:
+			break;
+	}
+
+	for(int i=0; i<numJogadores; i++){
+		if(vencedores[i]==true)
 			jogadores[i].premia(premioDaRodada/numVencedores);
 	}
 	
+	escreveOutputRodada(output, vencedores, numVencedores);
+
 }
 
 void mesaDePoker::ordenaJogadores(){
@@ -90,20 +201,6 @@ void mesaDePoker::ordenaJogadores(){
 			}
 }
 
-void mesaDePoker::escreveOutputRodada(ofstream *output){
-	if(!rodadaValida){
-		*output << 0 << " " << 0 << " " << "I" << endl;
-		return;
-	}
-
-	*output << numVencedores << " "
-			<< premioDaRodada/numVencedores << " "
-			<< rankVencedor << endl;
-	for (int i=0; i<numVencedores; i++){
-		*output << jogadores[i].getNome() << endl;
-	}
-}
-
 void mesaDePoker::escreveOutputFinal(ofstream *output){
 	*output << "####" << endl;
 	for(int i=0; i<numJogadores; i++){
@@ -111,6 +208,12 @@ void mesaDePoker::escreveOutputFinal(ofstream *output){
 				<< jogadores[i].getDinheiro() << endl;
 	}
 			
+}
+
+void mesaDePoker::limpaMaos(){
+	for(int i=0; i<numJogadores; i++){
+		jogadores[i].limpaMao();
+	}
 }
 
 void mesaDePoker::processaJogo(){
@@ -135,12 +238,11 @@ void mesaDePoker::processaJogo(){
 			analisaLinha(linha,(i==0));
 		}
 
-		processaRodada();
+		processaRodada(&outputFile);
 		ordenaJogadores();
-		escreveOutputRodada(&outputFile);
 		
+		limpaMaos();
 		rodadaValida = true;
-		numVencedores = 0;
 		premioDaRodada = 0;
 	}
 

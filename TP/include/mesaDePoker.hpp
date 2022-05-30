@@ -10,6 +10,7 @@
 // Exemplo: na entrada "Giovanni Ferreira 100 6O 3P 10E 11O 1O", existem 8 palavras, 6 delas sendo argumentos.
 #define NUM_ARGS 6
 
+using std::fstream;
 using std::ifstream;
 using std::ofstream;
 using std::stringstream;
@@ -22,7 +23,6 @@ class mesaDePoker{
 		jogador *jogadores;
 		int numJogadores;
 		int jogadoresAtuais;
-		int numVencedores;
 
 		int premioDaRodada;
 		int dinheiroBase;
@@ -32,19 +32,20 @@ class mesaDePoker{
 		bool rodadaValida;
 	
 	public:
-		mesaDePoker() : jogadores(nullptr), numJogadores(0), jogadoresAtuais(0), numVencedores(0), premioDaRodada(0),
+		mesaDePoker() : jogadores(nullptr), numJogadores(0), jogadoresAtuais(0), premioDaRodada(0),
 						dinheiroBase(0), pingo(0), rankVencedor(""), rodadaValida(true) {} // talvez transformar construtor para receber istream
 		void adicionaJogador(string, int);
 
 		jogador *getJogador(string const&) const;
 		bool possuiJogador(string const&) const; // Talvez não use
 		void analisaLinha(string const&, bool = false);
-		void processaRodada();
+		void processaRodada(ofstream*);
 		void ordenaJogadores();
 
-		void escreveOutputRodada(ofstream*);
+		void escreveOutputRodada(ofstream*, bool[], int);
 		void escreveOutputFinal(ofstream*);
 		ofstream escreveOutput();
+		void limpaMaos();
 		void processaJogo();
 
 };
