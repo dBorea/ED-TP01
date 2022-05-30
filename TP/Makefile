@@ -6,7 +6,7 @@ INC = include
 BIN = bin
 OBJS = $(OBJ)/main.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o
 HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp
-SANITIZE = #-fsanitize=undefined,address
+SANITIZE = -fsanitize=undefined,address
 CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE)
 LDFLAGS = $(SANITIZE)
 MAIN = $(BIN)/main.exe
