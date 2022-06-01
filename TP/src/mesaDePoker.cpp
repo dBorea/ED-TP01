@@ -59,10 +59,10 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	erroAssert(jogadorAtual!=nullptr,"Jogador não encontrado");
 
 	stream >> tempInt;										// Recebe a aposta do jogador
-	if(!jogadorAtual->setAposta(tempInt + pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
+	if(!jogadorAtual->setAposta(tempInt, pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
-	ESCREVEMEMLOG((long int)(jogadorAtual->apostaADebitar),sizeof(int),jogadorAtual->id);
-	premioDaRodada += tempInt + pingo;
+	premioDaRodada += tempInt;
+	//ESCREVEMEMLOG((long int)(jogadorAtual->apostaADebitar),sizeof(int),jogadorAtual->id);
 
 	ESCREVEMEMLOG((long int)(jogadorAtual->mao),sizeof(cartaDeBaralho[5]),jogadorAtual->id);
 	for(int i=0; i<NUM_CARTAS; i++){						// Lê e armazena as cartas do jogador atual
@@ -259,6 +259,12 @@ void mesaDePoker::processaJogo(){
 			for(int k=0; k<numJogadores; k++)
 				ESCREVEMEMLOG((long int)(&(jogadores[k])),sizeof(jogador),jogadores[k].id);
 		}
+
+		for(int j=0; j < numJogadores; j++){
+			jogadores[j].cobraPingo(pingo);
+			premioDaRodada += pingo;
+		}
+
 		for(int j=0; j < nJogadas; j++){
 			getline(inputFile, linha);
 			if(linha=="") getline(inputFile, linha);

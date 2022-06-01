@@ -63,7 +63,8 @@ class jogador {
 		repCounters numRepetidas();
 		rankings ranqueDaMao();
 
-		bool setAposta(int);
+		bool setAposta(int, int = 0);
+		void cobraPingo(int);
 		void debitaAposta();
 		void limpaMao();
 	friend class mesaDePoker;

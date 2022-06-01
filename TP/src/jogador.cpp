@@ -23,11 +23,17 @@ void jogador::addCarta(string const& carta){
 /// 
 /// @param quantia 
 /// @return true / false
-bool jogador::setAposta(int quantia){
-	apostaADebitar = quantia;
-	if(dinheiro - quantia >= 0)
+bool jogador::setAposta(int quantia, int pingo){
+	if(dinheiro - quantia + pingo >= 0){
+		apostaADebitar = quantia;
 		return 1;
+	}
 	return 0;
+}
+
+void jogador::cobraPingo(int pingo){
+	if(dinheiro - pingo >= 0)
+		apostaADebitar += pingo;
 }
 
 /// @brief Aplica as apostas do jogador
