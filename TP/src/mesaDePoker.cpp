@@ -1,6 +1,17 @@
 #include "mesaDePoker.hpp"
 
 using std::cout;
+using std::regex;
+using std::regex_match;
+
+const string fileFormat = "^(([1-9][0-9]*) ([1-9][0-9]*)\\n)((([1-9][0-9]*) ([1-9][0-9]*)\\n)(([a-zA-Zà-úÀ-Ú0-9]+ )+([1-9][0-9]*)( ([1-9]|1[0-3])[OCPE]){5}\\n*)+)+$";
+
+bool isValidInput(){
+	ifstream input("entrada.txt");
+	stringstream cmpStream;
+	cmpStream << input.rdbuf();
+	return regex_match(cmpStream.str(),regex(fileFormat));
+}
 
 int numDePalavras(string const& str){
     stringstream stream(str);
@@ -8,16 +19,18 @@ int numDePalavras(string const& str){
 }
 
 void mesaDePoker::adicionaJogador(string input_nome, int input_dinheiro){
-	jogadores[jogadoresAtuais] = jogador(input_nome, input_dinheiro);				// Cria o novo jogador e o coloca na última posição
+	jogadores[jogadoresAtuais] = jogador(input_nome, input_dinheiro, jogadoresAtuais); // Cria o novo jogador e o coloca na última posição
+	ESCREVEMEMLOG((long int)(&(jogadores[jogadoresAtuais])),sizeof(jogador),jogadores[jogadoresAtuais].id);
 	jogadoresAtuais++;
 }
 
 jogador *mesaDePoker::getJogador(string const& nome) const {
-	for(int i=0; i<numJogadores; i++)			// Itera sobre os jogadores
+	for(int i=0; i<numJogadores; i++){			// Itera sobre os jogadores
+		LEMEMLOG((long int)(&(jogadores[i])),sizeof(jogador),jogadores[i].id);
 		if(jogadores[i].getNome() == nome)		// Verifica o nome
 			return &jogadores[i];				// Retorna o jogador com o nome desejado
-
-	erroAssert(false,"Jogador não encontrado");
+	}
+	return nullptr;
 }
 
 bool mesaDePoker::possuiJogador(string const& nome) const{	// Talvez não use
@@ -43,12 +56,15 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 		adicionaJogador(nome, dinheiroBase);
 	
 	jogador *jogadorAtual = getJogador(nome);				// Cria um ponteiro temporário para o jogador atual
-	
+	erroAssert(jogadorAtual!=nullptr,"Jogador não encontrado");
+
 	stream >> tempInt;										// Recebe a aposta do jogador
 	if(!jogadorAtual->setAposta(tempInt + pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
+	ESCREVEMEMLOG((long int)(jogadorAtual->apostaADebitar),sizeof(int),jogadorAtual->id);
 	premioDaRodada += tempInt + pingo;
 
+	ESCREVEMEMLOG((long int)(jogadorAtual->mao),sizeof(cartaDeBaralho[5]),jogadorAtual->id);
 	for(int i=0; i<NUM_CARTAS; i++){						// Lê e armazena as cartas do jogador atual
 		stream >> tempString;
 		jogadorAtual->addCarta(tempString);
@@ -72,6 +88,8 @@ void mesaDePoker::processaRodada(ofstream *output){
 
 	if(!rodadaValida){
 		*output << 0 << " " << 0 << " " << "I" << endl;
+		rankVencedor="";
+		premioDaRodada=0;
 		return;
 	}
 
@@ -80,21 +98,17 @@ void mesaDePoker::processaRodada(ofstream *output){
 	bool vencedores[numJogadores] = {false};
 	rankings rankAtual = invalid;
 	rankings maiorRank = invalid;
-	if(!rodadaValida){
-		numVencedores=0;
-		rankVencedor="";
-		premioDaRodada=0;
-		return;
-	}
 
 	for(int i=0; i<numJogadores; i++){
 		jogadores[i].debitaAposta();
+		ESCREVEMEMLOG((long int)(&(jogadores[i].apostaADebitar)),sizeof(int),jogadores[i].id);
 		jogadores[i].setAposta(0);
+		ESCREVEMEMLOG((long int)(&(jogadores[i].apostaADebitar)),sizeof(int),jogadores[i].id);
 	}
 
 	for(int i=0; i<numJogadores; i++){
 		rankAtual = jogadores[i].ranqueDaMao();
-
+		LEMEMLOG((long int)(jogadores[i].mao),sizeof(cartaDeBaralho[5]),jogadores[i].id);
 		if(rankAtual > maiorRank){
 			for(int j=0; j<i; j++)
 				vencedores[j] = false;
@@ -111,6 +125,7 @@ void mesaDePoker::processaRodada(ofstream *output){
 	
 	for(int i=0; i<numJogadores; i++){
 		if(vencedores[i]==true){
+			LEMEMLOG((long int)(&(jogadores[i].maiorCartaDaJogada)),sizeof(int),jogadores[i].id);
 			if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
 				for(int j=0; j<i; j++){
 					if(vencedores[j]==true){
@@ -130,6 +145,7 @@ void mesaDePoker::processaRodada(ofstream *output){
 	
 	for(int i=0; i<numJogadores; i++){
 		if(vencedores[i]==true){
+			LEMEMLOG((long int)(&(jogadores[i].maiorCartaDaJogada)),sizeof(int),jogadores[i].id);
 			if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
 				for(int j=0; j<i; j++){
 					if(vencedores[j]==true){
@@ -183,8 +199,11 @@ void mesaDePoker::processaRodada(ofstream *output){
 	}
 
 	for(int i=0; i<numJogadores; i++){
-		if(vencedores[i]==true)
+
+		if(vencedores[i]==true){
+			ESCREVEMEMLOG((long int)(&(jogadores[i].apostaADebitar)),sizeof(int),jogadores[i].id);
 			jogadores[i].premia(premioDaRodada/numVencedores);
+		}
 	}
 	
 	escreveOutputRodada(output, vencedores, numVencedores);
@@ -198,6 +217,10 @@ void mesaDePoker::ordenaJogadores(){
 				jogador temp = jogadores[j];
 				jogadores[j] = jogadores[j+1];
 				jogadores[j+1] = temp;
+				LEMEMLOG((long int)(&(jogadores[j])),sizeof(jogador),jogadores[j].id);
+				LEMEMLOG((long int)(&(jogadores[j-1])),sizeof(jogador),jogadores[j-1].id);
+				ESCREVEMEMLOG((long int)(&(jogadores[j])),sizeof(jogador),jogadores[j].id);
+				ESCREVEMEMLOG((long int)(&(jogadores[j-1])),sizeof(jogador),jogadores[j-1].id);
 			}
 }
 
@@ -218,8 +241,10 @@ void mesaDePoker::limpaMaos(){
 
 void mesaDePoker::processaJogo(){
 	ifstream inputFile("entrada.txt");
-	erroAssert(!inputFile.fail(), "Arquivo de entrada não pôde ser aberto");
+	erroAssert(!inputFile.fail(), "Arquivo de entrada 'entrada.exe' não pôde ser aberto");
 	ofstream outputFile("saida.txt");
+	
+	erroAssert(isValidInput(), "Arquivo de entrada inválido.");
 
 	int nRodadas=0, nJogadas=0;
 	string linha;
@@ -231,6 +256,8 @@ void mesaDePoker::processaJogo(){
 		if(i==0) {
 			numJogadores = nJogadas;
 			jogadores = new jogador[numJogadores];
+			for(int k=0; k<numJogadores; k++)
+				ESCREVEMEMLOG((long int)(&(jogadores[k])),sizeof(jogador),jogadores[k].id);
 		}
 		for(int j=0; j < nJogadas; j++){
 			getline(inputFile, linha);

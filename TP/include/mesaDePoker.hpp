@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
+#include <regex>
 #include "jogador.hpp"
 
 // O número de argumentos representa o número de palavras em uma linha da entrada que não faz parte do nome do jogador.

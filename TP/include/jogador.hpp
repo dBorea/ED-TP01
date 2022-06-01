@@ -37,16 +37,17 @@ class jogador {
 		cartaDeBaralho mao[NUM_CARTAS];
 		string nome;
 		int dinheiro;
+		int id;
 		int apostaADebitar;
 		int maiorCartaIsolada;
 		int maiorCartaDaJogada;
 
 	public:
 		// Construtor vazio. Inicia nome como "" e dinheiro como '0'.
-		jogador() : nome(""), dinheiro(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
+		jogador() : nome(""), dinheiro(0), id(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
 		// Construtor simples
-		jogador(string _nome, int _dinheiro) : nome(_nome), dinheiro(_dinheiro), 
-											   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
+		jogador(string _nome, int _dinheiro, int _id) : nome(_nome), dinheiro(_dinheiro), id(_id),
+											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
 		void addCarta(string const&);
 
 		string getNome() const { return nome; }

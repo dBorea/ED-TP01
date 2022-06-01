@@ -11,22 +11,17 @@ using std::ifstream;
 using std::ofstream;
 using std::string;
 
-
-void testaCarta(){
-	cartaDeBaralho cartaTeste("13C");
-	cartaTeste.printCarta();
-	cartaTeste.setCarta("1S");
-	cartaTeste.printCarta();
-}
-
 void instrucoes(){
 	cout << "PokerSim" << endl;
 }
 
 int main(){
-	mesaDePoker mesa;
 
+	iniciaMemLog("pokerSimLog.out");
+	ativaMemLog();
+
+	mesaDePoker mesa;
 	mesa.processaJogo();
-	//testaCarta();
-	return 0;
+
+	return finalizaMemLog();
 }

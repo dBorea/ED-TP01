@@ -46,10 +46,11 @@ int  jogador::maiorCarta() const {
 }
 
 bool jogador::checkStraight(){
-	int cartasAChecar = (mao[NUM_CARTAS-2].getNum()==10 && mao[NUM_CARTAS-1].getNum()==1)? NUM_CARTAS-1 : NUM_CARTAS;
-	for(int i=0; i<cartasAChecar; i++)
+	int cartasAChecar = (mao[0].getNum()==13 && mao[NUM_CARTAS-1].getNum()==1)? NUM_CARTAS-1 : NUM_CARTAS;
+	for(int i=0; i<cartasAChecar; i++){
 		if(mao[i].getNum() != mao[0].getNum()-i)
 			return false;
+	}
 	if(cartasAChecar==NUM_CARTAS-1)
 		maiorCartaDaJogada = 14;
 	maiorCartaDaJogada = maiorCarta();

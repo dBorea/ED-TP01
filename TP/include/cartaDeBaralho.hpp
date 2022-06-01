@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "msgassert.hpp"
+#include "memlog.hpp"
 
 using std::string;
 using std::stoi;
