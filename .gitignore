@@ -5,4 +5,5 @@
 *.zip
 *.rar
 *.txt
+*.out
 temp/

@@ -29,6 +29,7 @@ $(OBJ)/memlog.o: $(HDRS) $(SRC)/memlog.cpp
 	$(CXX) $(CXXFLAGS) -o $(OBJ)/memlog.o $(SRC)/memlog.cpp
 
 perf: $(EXE)
+	rm -f ../temp/pokerSimLog.out
 	$(EXE) -l ../temp/pokerSimLog.out
 	$(ANALISAMEM) -i ../temp/pokerSimLog.out -p ../temp/pokerSimLogData
 	gnuplot ../temp/*.gp

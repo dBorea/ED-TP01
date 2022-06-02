@@ -13,7 +13,14 @@ using std::ofstream;
 using std::string;
 
 void instrucoes(){
-	cout << "PokerSim" << endl;
+	cout << "||----------PokerSim----------||" << endl;
+	cout << "Args:" << endl;
+	cout << "\t-h\t\t\t|Ajuda" << endl;
+	cout << "\t-l <arq>\t\t|Registrar acessos de memória em arquivo" << endl;
+	cout << "Como usar:" << endl;
+	cout << "No terminal, acesse a pasta onde o arquivo 'entrada.txt' está localizado." << endl;
+	cout << "Execute o programa pelo terminal. Será gerado um arquivo 'saida.txt' completo caso o programa seja executado sem erros." << endl;
+	cout << "Se houver uma mensagem de erro, a saída é inválida e deve ser descartada." << endl;
 }
 
 bool parseArgs(int argc, char *argv[], char lognome[]){

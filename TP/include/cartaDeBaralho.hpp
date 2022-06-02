@@ -33,6 +33,8 @@ class cartaDeBaralho {
 		void setNaipe(string input) { naipe = input; }
 		void setNum(int num) { numero = num; }
 		void setCarta(string input){ *this = cartaDeBaralho(input); }
+	friend class jogador;
+	friend class mesaDePoker;
 };
 
 #endif

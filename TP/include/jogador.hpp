@@ -50,12 +50,24 @@ class jogador {
 											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
 		void addCarta(string const&);
 
-		string getNome() const { return nome; }
-		int getDinheiro() const { return dinheiro; }
-		int getMaiorCartaIsolada() const { return maiorCartaIsolada; }
-		int getMaiorCartaDaJogada() const { return maiorCartaDaJogada; }
+		string getNome() const { 
+			LEMEMLOG((long int)(&nome),sizeof(string),id);
+			return nome; 
+		}
+		int getDinheiro() const { 
+			LEMEMLOG((long int)(&dinheiro),sizeof(int),id);
+			return dinheiro; 
+		}
+		int getMaiorCartaIsolada() const { 
+			LEMEMLOG((long int)(&maiorCartaIsolada),sizeof(int),id);
+			return maiorCartaIsolada; 
+		}
+		int getMaiorCartaDaJogada() const { 
+			LEMEMLOG((long int)(&maiorCartaDaJogada),sizeof(int),id);
+			return maiorCartaDaJogada; 
+		}
 		int maiorCarta() const;
-		void premia(int input) { dinheiro += input; }
+		void premia(int input) { ESCREVEMEMLOG((long int)(&(dinheiro)),sizeof(int),id); dinheiro += input; }
 
 		bool checkStraight();
 		bool checkFlush();
