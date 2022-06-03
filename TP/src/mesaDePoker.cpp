@@ -6,34 +6,8 @@ using std::regex_match;
 
 const string fileFormat = "^(([1-9][0-9]*) ([1-9][0-9]*)\\n)((([1-9][0-9]*) ([1-9][0-9]*)\\n)(([a-zA-Zà-úÀ-Ú0-9]+ )+([1-9][0-9]*)( ([1-9]|1[0-3])[OCPE]){5}\\n*)+)+$";
 
-void mesaDePoker::regLeituraJogador(int index){
-	LEMEMLOG((long int)(&(jogadores[index].nome)),sizeof(string),jogadores[index].id);
-	LEMEMLOG((long int)(&(jogadores[index].dinheiro)),sizeof(int),jogadores[index].id);
-	LEMEMLOG((long int)(&(jogadores[index].id)),sizeof(int),jogadores[index].id);
-	LEMEMLOG((long int)(&(jogadores[index].apostaADebitar)),sizeof(int),jogadores[index].id);
-	LEMEMLOG((long int)(&(jogadores[index].maiorCartaIsolada)),sizeof(int),jogadores[index].id);
-	LEMEMLOG((long int)(&(jogadores[index].maiorCartaDaJogada)),sizeof(int),jogadores[index].id);
-	for(int i=0; i<NUM_CARTAS; i++){
-		LEMEMLOG((long int)(&(jogadores[index].mao[i].numero)),sizeof(int),jogadores[index].id);
-		LEMEMLOG((long int)(&(jogadores[index].mao[i].naipe)),sizeof(string),jogadores[index].id);
-	}
-}
-
-void mesaDePoker::regEscritaJogador(int index){
-	ESCREVEMEMLOG((long int)(&(jogadores[index].nome)),sizeof(string),jogadores[index].id);
-	ESCREVEMEMLOG((long int)(&(jogadores[index].dinheiro)),sizeof(int),jogadores[index].id);
-	ESCREVEMEMLOG((long int)(&(jogadores[index].id)),sizeof(int),jogadores[index].id);
-	ESCREVEMEMLOG((long int)(&(jogadores[index].apostaADebitar)),sizeof(int),jogadores[index].id);
-	ESCREVEMEMLOG((long int)(&(jogadores[index].maiorCartaIsolada)),sizeof(int),jogadores[index].id);
-	ESCREVEMEMLOG((long int)(&(jogadores[index].maiorCartaDaJogada)),sizeof(int),jogadores[index].id);
-	for(int i=0; i<NUM_CARTAS; i++){
-		ESCREVEMEMLOG((long int)(&(jogadores[index].mao[i].numero)),sizeof(int),jogadores[index].id);
-		ESCREVEMEMLOG((long int)(&(jogadores[index].mao[i].naipe)),sizeof(string),jogadores[index].id);
-	}
-}
-
-bool isValidInput(){
-	ifstream input("entrada.txt");
+bool isValidInput(string nomeArq){
+	ifstream input(nomeArq);
 	stringstream cmpStream;
 	cmpStream << input.rdbuf();
 	return regex_match(cmpStream.str(),regex(fileFormat));
@@ -46,7 +20,6 @@ int numDePalavras(string const& str){
 
 void mesaDePoker::adicionaJogador(string input_nome, int input_dinheiro){
 	jogadores[jogadoresAtuais] = jogador(input_nome, input_dinheiro, jogadoresAtuais); // Cria o novo jogador e o coloca na última posição
-	regEscritaJogador(jogadoresAtuais);
 	jogadoresAtuais++;
 }
 
@@ -142,44 +115,45 @@ void mesaDePoker::processaRodada(ofstream *output){
 			numVencedores++;
 		}
 	}
-	
-	for(int i=0; i<numJogadores; i++){
-		if(vencedores[i]==true){
-			if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
-				for(int j=0; j<i; j++){
-					if(vencedores[j]==true){
-						vencedores[j] = false;
-						numVencedores--;
+	if(numVencedores>1)
+		for(int i=0; i<numJogadores; i++){
+			if(vencedores[i]==true){
+				if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
+					for(int j=0; j<i; j++){
+						if(vencedores[j]==true){
+							vencedores[j] = false;
+							numVencedores--;
+						}
 					}
+					maiorCartaJogada = jogadores[i].getMaiorCartaDaJogada();
+				} 
+				
+				else if(jogadores[i].getMaiorCartaDaJogada() < maiorCartaJogada){
+					vencedores[i] = false;
+					numVencedores --;
 				}
-				maiorCartaJogada = jogadores[i].getMaiorCartaDaJogada();
-			} 
-			
-			else if(jogadores[i].getMaiorCartaDaJogada() < maiorCartaJogada){
-				vencedores[i] = false;
-				numVencedores --;
 			}
 		}
-	}
 	
-	for(int i=0; i<numJogadores; i++){
-		if(vencedores[i]==true){
-			if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
-				for(int j=0; j<i; j++){
-					if(vencedores[j]==true){
-						vencedores[j] = false;
-						numVencedores--;
+	if(numVencedores>1)
+		for(int i=0; i<numJogadores; i++){
+			if(vencedores[i]==true){
+				if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
+					for(int j=0; j<i; j++){
+						if(vencedores[j]==true){
+							vencedores[j] = false;
+							numVencedores--;
+						}
 					}
+					maiorCartaSolta = jogadores[i].getMaiorCartaIsolada();
+				} 
+				
+				else if(jogadores[i].getMaiorCartaIsolada() < maiorCartaSolta){
+					vencedores[i] = false;
+					numVencedores --;
 				}
-				maiorCartaSolta = jogadores[i].getMaiorCartaIsolada();
-			} 
-			
-			else if(jogadores[i].getMaiorCartaIsolada() < maiorCartaSolta){
-				vencedores[i] = false;
-				numVencedores --;
 			}
 		}
-	}
 
 	switch(maiorRank){
 		case high_card:
@@ -232,12 +206,8 @@ void mesaDePoker::ordenaJogadores(){
 		for(int j=0; j<numJogadores-i-1; j++)
 			if(jogadores[j].getDinheiro() < jogadores[j+1].getDinheiro()){
 				jogador temp = jogadores[j];
-				regLeituraJogador(j);
 				jogadores[j] = jogadores[j+1];
-				regLeituraJogador(j+1);
-				regEscritaJogador(j);
 				jogadores[j+1] = temp;
-				regEscritaJogador(j+1);
 			}
 }
 
@@ -256,12 +226,14 @@ void mesaDePoker::limpaMaos(){
 	}
 }
 
-void mesaDePoker::processaJogo(){
-	ifstream inputFile("entrada.txt");
-	erroAssert(!inputFile.fail(), "Arquivo de entrada 'entrada.exe' não pôde ser aberto");
-	ofstream outputFile("saida.txt");
+void mesaDePoker::processaJogo(char inputName[], char outputName[]){
+	string arqEntrada(inputName);
+	string arqSaida(outputName);
+	ifstream inputFile(arqEntrada);
+	erroAssert(!inputFile.fail(), "Arquivo de entrada não pôde ser aberto");
+	ofstream outputFile(arqSaida);
 	
-	erroAssert(isValidInput(), "Arquivo de entrada inválido.");
+	//erroAssert(isValidInput(arqEntrada), "Arquivo de entrada inválido.");
 
 	int nRodadas=0, nJogadas=0;
 	string linha;

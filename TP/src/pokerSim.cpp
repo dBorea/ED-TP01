@@ -16,45 +16,81 @@ void instrucoes(){
 	cout << "||----------PokerSim----------||" << endl;
 	cout << "Args:" << endl;
 	cout << "\t-h\t\t\t|Ajuda" << endl;
-	cout << "\t-l <arq>\t\t|Registrar acessos de memória em arquivo" << endl;
-	cout << "Como usar:" << endl;
+	cout << "\t-l\t\t\t|Opcional: Registrar os acessos de memória em adição aos tempos de execução" << endl;
+	cout << "\t-i <arq>\t\t|Opcional: Especializar o nome de entrada do arquivo" << endl;
+	cout << "\t-o <arq>\t\t|Opcional: Especializar o nome de saída do arquivo" << endl;
+	cout << "\t-p <arq>\t\t|Opcional: Especializar o nome do registro de execução" << endl;
+	cout << endl << "Como usar:" << endl;
 	cout << "No terminal, acesse a pasta onde o arquivo 'entrada.txt' está localizado." << endl;
 	cout << "Execute o programa pelo terminal. Será gerado um arquivo 'saida.txt' completo caso o programa seja executado sem erros." << endl;
 	cout << "Se houver uma mensagem de erro, a saída é inválida e deve ser descartada." << endl;
 }
 
-bool parseArgs(int argc, char *argv[], char lognome[]){
+bool parseArgs(int argc, char *argv[], char logname[], char inputname[], char outputname[]){
 	extern char *optarg;
 	//extern int optind;
+	logname[0] = 0;
+	inputname[0] = 0;
+	outputname[0] = 0;
+	bool optReg = false;
+	bool optInput = false;
+	bool optOutput = false;
+	bool regmem = false;
 
-	for(int opt; (opt=getopt(argc, argv, "l:h")) != EOF;){
+	for(int opt; (opt=getopt(argc, argv, "p:hi:o:l")) != EOF;){
 		switch (opt){
-		case 'l':
-			strcpy(lognome, optarg);
-			return 1;
+		case 'p':
+			strcpy(logname, optarg);
+			erroAssert(strlen(logname)>0, "Com a opção -p, o nome do arquivo de log deve ser informado.");
+			optReg = true;
+			break;
 		
 		case 'h':
 			instrucoes();
 			exit(1);
 
+		case 'i':
+			strcpy(inputname, optarg);
+			erroAssert(strlen(inputname)>0, "Com a opção -i, o nome do arquivo de entrada deve ser informado.");
+			optInput = true;
+			break;
+
+		case 'o':
+			strcpy(outputname, optarg);
+			erroAssert(strlen(outputname)>0, "Com a opção -o, o nome do arquivo de saída deve ser informado.");
+			optOutput = true;
+			break;
+
+		case 'l':
+			regmem = true;
+			break;
+
 		default:
 			break;
 		}
 	}
-	return 0;
+
+	if(optReg == false){
+		if(regmem) 	strcpy(logname, "../temp/regmem/log.out");
+		else 		strcpy(logname, "../temp/regperf/log.out");
+	} 
+	if(optInput == false) strcpy(inputname, "entrada.txt");
+	if(optOutput == false) strcpy(outputname, "saida.txt");
+	return regmem;
 }
 
 int main(int argc, char *argv[]){
-	char lognome[100];
-	bool logRegister = parseArgs(argc, argv, lognome);
-	if(logRegister){
-		iniciaMemLog(lognome);
+	char logname[100], inputname[100], outputname[100];
+	bool regmem = parseArgs(argc, argv, logname, inputname, outputname);
+	
+	iniciaMemLog(logname);
+	if(regmem)
 		ativaMemLog();
-	}
+	else 
+		desativaMemLog();
 
 	mesaDePoker mesa;
-	mesa.processaJogo();
+	mesa.processaJogo(inputname, outputname);
 
-	if(logRegister) finalizaMemLog();
-	return 0;
+	return finalizaMemLog();
 }

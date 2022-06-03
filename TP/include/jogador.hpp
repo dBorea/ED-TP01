@@ -48,6 +48,7 @@ class jogador {
 		// Construtor simples
 		jogador(string _nome, int _dinheiro, int _id) : nome(_nome), dinheiro(_dinheiro), id(_id),
 											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
+		jogador& operator=(const jogador& outro);
 		void addCarta(string const&);
 
 		string getNome() const { 
@@ -69,6 +70,7 @@ class jogador {
 		int maiorCarta() const;
 		void premia(int input) { ESCREVEMEMLOG((long int)(&(dinheiro)),sizeof(int),id); dinheiro += input; }
 
+		bool checkValidPlay();
 		bool checkStraight();
 		bool checkFlush();
 		bool checkRoyal() const;

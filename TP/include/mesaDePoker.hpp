@@ -37,9 +37,6 @@ class mesaDePoker{
 						dinheiroBase(0), pingo(0), rankVencedor(""), rodadaValida(true) {} // talvez transformar construtor para receber istream
 		void adicionaJogador(string, int);
 
-		void regLeituraJogador(int);
-		void regEscritaJogador(int);
-
 		jogador *getJogador(string const&) const;
 		bool possuiJogador(string const&) const; // Talvez não use
 		void analisaLinha(string const&, bool = false);
@@ -50,7 +47,7 @@ class mesaDePoker{
 		void escreveOutputFinal(ofstream*);
 		ofstream escreveOutput();
 		void limpaMaos();
-		void processaJogo();
+		void processaJogo(char[], char[]);
 
 };
 

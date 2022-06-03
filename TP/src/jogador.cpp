@@ -1,5 +1,38 @@
 #include "jogador.hpp"
 
+jogador& jogador::operator=(const jogador& outro){
+	if(this == &outro)
+		return *this;
+
+	for(int i=0; i<NUM_CARTAS; i++){
+		LEMEMLOG((long int)(&(outro.mao[i].numero)),sizeof(int),id);
+		LEMEMLOG((long int)(&(outro.mao[i].naipe)),sizeof(string),id);
+		ESCREVEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
+		ESCREVEMEMLOG((long int)(&(mao[i].naipe)),sizeof(string),id);
+		mao[i].numero = outro.mao[i].getNum();
+		mao[i].naipe = outro.mao[i].getNaipe();
+	}
+	LEMEMLOG((long int)(&(outro.nome)),sizeof(string),id);
+	LEMEMLOG((long int)(&(outro.dinheiro)),sizeof(int),id);
+	LEMEMLOG((long int)(&(outro.id)),sizeof(int),id);
+	LEMEMLOG((long int)(&(outro.apostaADebitar)),sizeof(int),id);
+	LEMEMLOG((long int)(&(outro.maiorCartaIsolada)),sizeof(int),id);
+	LEMEMLOG((long int)(&(outro.maiorCartaDaJogada)),sizeof(int),id);
+					  nome = outro.nome;
+				  dinheiro = outro.dinheiro;
+						id = outro.id;
+			apostaADebitar = outro.apostaADebitar;
+		 maiorCartaIsolada = outro.maiorCartaIsolada;
+		maiorCartaDaJogada = outro.maiorCartaDaJogada;
+	ESCREVEMEMLOG((long int)(&(nome)),sizeof(string),id);
+	ESCREVEMEMLOG((long int)(&(dinheiro)),sizeof(int),id);
+	ESCREVEMEMLOG((long int)(&(id)),sizeof(int),id);
+	ESCREVEMEMLOG((long int)(&(apostaADebitar)),sizeof(int),id);
+	ESCREVEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
+	ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
+
+	return *this;
+}
 
 /// @brief Adiciona uma carta à mão do jogador, ordenada de maior para menor
 /// 
@@ -72,6 +105,17 @@ int  jogador::maiorCarta() const {
 	return 0;
 }
 
+bool jogador::checkValidPlay(){
+	for(int i=0; i<NUM_CARTAS; i++){
+		LEMEMLOG((long int)(&(mao[i].naipe)),sizeof(string),id);
+		LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
+		LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
+		if(mao[i].getNaipe() == "" || mao[i].getNum() < 1 || mao[i].getNum() > 13)
+			return false;
+	}
+	return true;
+}
+
 bool jogador::checkStraight(){
 	LEMEMLOG((long int)(&(mao[0].numero)),sizeof(int),id);
 	LEMEMLOG((long int)(&(mao[NUM_CARTAS-1].numero)),sizeof(int),id);
@@ -98,7 +142,9 @@ bool jogador::checkFlush(){
 			return false;
 	}
 	ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
-	maiorCartaDaJogada = maiorCarta();
+	if(mao[4].getNum()==1)
+		maiorCartaDaJogada = 14;
+	else maiorCartaDaJogada = maiorCarta();
 	return true;
 }
 
@@ -121,14 +167,24 @@ repCounters jogador::numRepetidas(){
 				}
 			}
 			LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
-			if(combo==1 && mao[i].getNum() > maiorCartaIsolada){ 
-				LEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
-				maiorCartaIsolada = mao[i].getNum();
+			if(combo==1){
+				if(mao[i].getNum() > maiorCartaIsolada){
+					ESCREVEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
+					maiorCartaIsolada = mao[i].getNum();
+				}
+				if(mao[i].getNum() == 1){
+					maiorCartaIsolada = 14;
+				}
 			}
 			LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
-			if(combo!=1 && mao[i].getNum() > maiorCartaDaJogada){ 
-				LEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
-				maiorCartaDaJogada = mao[i].getNum();
+			if(combo!=1){
+				if(mao[i].getNum() > maiorCartaDaJogada){
+					ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
+					maiorCartaDaJogada = mao[i].getNum();
+				}
+				if(mao[i].getNum() == 1){
+					maiorCartaDaJogada = 14;
+				}
 			}
 			combos[combo-1]++;
 		}
@@ -156,6 +212,9 @@ bool jogador::checkRoyal() const {
 }
 
 rankings jogador::ranqueDaMao(){
+
+	if(!checkValidPlay())
+		return invalid;
 
 	bool isFlush = checkFlush();
 	bool isStraight = checkStraight();
