@@ -4,18 +4,23 @@ using std::cout;
 using std::regex;
 using std::regex_match;
 
-const string fileFormat = "^(([1-9][0-9]*) ([1-9][0-9]*)\\n)((([1-9][0-9]*) ([1-9][0-9]*)\\n)(([a-zA-Zà-úÀ-Ú0-9]+ )+([1-9][0-9]*)( ([1-9]|1[0-3])[OCPE]){5}\\n*)+)+$";
+/*const string fileFormat = "^(([1-9][0-9]*) ([1-9][0-9]*)\\n)((([1-9][0-9]*) ([1-9][0-9]*)\\n)(([a-zA-Zà-úÀ-Ú0-9]+ )+([1-9][0-9]*)( ([1-9]|1[0-3])[OCPE]){5}\\n*)+)+$";
 
 bool isValidInput(string nomeArq){
 	ifstream input(nomeArq);
 	stringstream cmpStream;
 	cmpStream << input.rdbuf();
 	return regex_match(cmpStream.str(),regex(fileFormat));
-}
+}*/
 
 int numDePalavras(string const& str){
     stringstream stream(str);
     return distance(istream_iterator<string>(stream), istream_iterator<string>());
+}
+
+bool is_number(const string& s){
+	return !s.empty() && std::find_if(s.begin(),
+		s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
 
 void mesaDePoker::adicionaJogador(string input_nome, int input_dinheiro){
@@ -44,10 +49,16 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	string tempString;
 	int tempInt;
 
-	for(int i=0; i<numDePalavras(linha)-NUM_ARGS; i++){		// Recebe o nome completo do jogador
-		if(i>0) nome.append(" ");
+	for(int i=0;; i++){		// Recebe o nome completo do jogador
 		stream >> tempString;
-		nome.append(tempString);
+		if (is_number(tempString)){
+			tempInt = stoi(tempString);
+			break;
+		}
+		else {
+			if(i>0) nome.append(" ");
+			nome.append(tempString);
+		}
 	}
 
 	if(primeiraRodada)										// Adiciona o jogador na lista caso seja a primeira rodada
@@ -56,7 +67,6 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	jogador *jogadorAtual = getJogador(nome);				// Cria um ponteiro temporário para o jogador atual
 	erroAssert(jogadorAtual!=nullptr,"Jogador não encontrado");
 
-	stream >> tempInt;										// Recebe a aposta do jogador
 	if(!jogadorAtual->setAposta(tempInt, pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
 	premioDaRodada += tempInt;
@@ -115,6 +125,7 @@ void mesaDePoker::processaRodada(ofstream *output){
 			numVencedores++;
 		}
 	}
+	
 	if(numVencedores>1)
 		for(int i=0; i<numJogadores; i++){
 			if(vencedores[i]==true){
@@ -254,8 +265,10 @@ void mesaDePoker::processaJogo(char inputName[], char outputName[]){
 		}
 
 		for(int j=0; j < numJogadores; j++){
-			jogadores[j].cobraPingo(pingo);
-			premioDaRodada += pingo;
+			if(jogadores[j].cobraPingo(pingo))
+				premioDaRodada += pingo;
+			else
+				rodadaValida = false;
 		}
 
 		processaRodada(&outputFile);

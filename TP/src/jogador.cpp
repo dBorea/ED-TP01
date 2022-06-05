@@ -3,24 +3,9 @@
 jogador& jogador::operator=(const jogador& outro){
 	if(this == &outro)
 		return *this;
-
-	for(int i=0; i<NUM_CARTAS; i++){
-		LEMEMLOG((long int)(&(outro.mao[i].numero)),sizeof(int),id);
-		LEMEMLOG((long int)(&(outro.mao[i].naipe)),sizeof(string),id);
-		ESCREVEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
-		ESCREVEMEMLOG((long int)(&(mao[i].naipe)),sizeof(string),id);
-		mao[i].numero = outro.mao[i].getNum();
-		mao[i].naipe = outro.mao[i].getNaipe();
-	}
-	LEMEMLOG((long int)(&(outro.nome)),sizeof(string),id);
-	LEMEMLOG((long int)(&(outro.dinheiro)),sizeof(int),id);
-	LEMEMLOG((long int)(&(outro.id)),sizeof(int),id);
-	LEMEMLOG((long int)(&(outro.apostaADebitar)),sizeof(int),id);
-	LEMEMLOG((long int)(&(outro.maiorCartaIsolada)),sizeof(int),id);
-	LEMEMLOG((long int)(&(outro.maiorCartaDaJogada)),sizeof(int),id);
+						id = outro.id;
 					  nome = outro.nome;
 				  dinheiro = outro.dinheiro;
-						id = outro.id;
 			apostaADebitar = outro.apostaADebitar;
 		 maiorCartaIsolada = outro.maiorCartaIsolada;
 		maiorCartaDaJogada = outro.maiorCartaDaJogada;
@@ -30,6 +15,13 @@ jogador& jogador::operator=(const jogador& outro){
 	ESCREVEMEMLOG((long int)(&(apostaADebitar)),sizeof(int),id);
 	ESCREVEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
 	ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
+
+	for(int i=0; i<NUM_CARTAS; i++){
+		ESCREVEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
+		ESCREVEMEMLOG((long int)(&(mao[i].naipe)),sizeof(string),id);
+		mao[i].numero = outro.mao[i].getNum();
+		mao[i].naipe = outro.mao[i].getNaipe();
+	}
 
 	return *this;
 }
@@ -76,12 +68,14 @@ bool jogador::setAposta(int quantia, int pingo){
 	return 0;
 }
 
-void jogador::cobraPingo(int pingo){
+bool jogador::cobraPingo(int pingo){
 	LEMEMLOG((long int)(&(dinheiro)),sizeof(int),id);
 	if(dinheiro - pingo >= 0){
 		ESCREVEMEMLOG((long int)(&(apostaADebitar)),sizeof(int),id);
 		apostaADebitar += pingo;
+		return true;
 	}
+	return false;
 }
 
 /// @brief Aplica as apostas do jogador
@@ -195,6 +189,7 @@ repCounters jogador::numRepetidas(){
 					 if(combos[par]==2) return doisPares;
 										return par;
 	}
+	if(combos[trinca]) return trinca;
 	return unica;
 }
 

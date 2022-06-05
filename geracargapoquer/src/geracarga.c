@@ -17,7 +17,7 @@
 
 const double DBL_EPS_COMP = 1 - DBL_EPSILON; 
 
-#define MAXJOGADORES 50
+#define MAXJOGADORES 1000
 #define MINJOGADORES 2
 
 char naipes[5]="PECO";

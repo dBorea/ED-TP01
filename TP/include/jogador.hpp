@@ -78,7 +78,7 @@ class jogador {
 		rankings ranqueDaMao();
 
 		bool setAposta(int, int = 0);
-		void cobraPingo(int);
+		bool cobraPingo(int);
 		void debitaAposta();
 		void limpaMao();
 	friend class mesaDePoker;
