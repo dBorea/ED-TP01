@@ -11,12 +11,12 @@ EXECFILES = $(TEMP)/execfiles
 OBJS = $(OBJ)/pokerSim.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o $(OBJ)/memlog.o
 HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp $(INC)/memlog.hpp
 SANITIZE = #-fsanitize=undefined,address -static-libasan
-CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE) 
+CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE)
 LDFLAGS = $(SANITIZE)
 ANALISAMEM = ../analisamem/bin/analisamem
 GENLOAD = ../geracargapoquer/bin/geracarga
 
-EXE = $(BIN)/pokerSim.exe
+EXE = $(BIN)/tp1
 
 $(EXE): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(EXE) $(OBJS) $(LIBS)
@@ -38,12 +38,6 @@ mem: $(EXE)
 	$(EXE) -p $(REGMEM)/pokerSimLog.out -l -i $(EXECFILES)/entrada.txt -o $(EXECFILES)/saida.txt
 	$(ANALISAMEM) -i $(REGMEM)/pokerSimLog.out -p $(REGMEM)/pokerSimLogData
 	gnuplot $(REGMEM)/*.gp
-
-mem2: $(EXE)
-	rm -f $(REGMEM)/Frade/pokerSimLog.out 
-	$(EXE) -p $(REGMEM)/Frade/pokerSimLogFrade.out -l -i $(EXECFILES)/entradaFrade.txt -o $(EXECFILES)/saidaFrade.txt
-	$(ANALISAMEM) -i $(REGMEM)/Frade/pokerSimLogFrade.out -p $(REGMEM)/Frade/pokerSimLogData
-	gnuplot $(REGMEM)/Frade/*.gp
 
 genload: $(GENLOAD)
 	$(GENLOAD) -o $(EXECFILES)/entrada1000rodadas100jg.txt -r 1000 -j 100 -v 0

@@ -1,22 +1,6 @@
 #include "mesaDePoker.hpp"
 
 using std::cout;
-using std::regex;
-using std::regex_match;
-
-/*const string fileFormat = "^(([1-9][0-9]*) ([1-9][0-9]*)\\n)((([1-9][0-9]*) ([1-9][0-9]*)\\n)(([a-zA-Zà-úÀ-Ú0-9]+ )+([1-9][0-9]*)( ([1-9]|1[0-3])[OCPE]){5}\\n*)+)+$";
-
-bool isValidInput(string nomeArq){
-	ifstream input(nomeArq);
-	stringstream cmpStream;
-	cmpStream << input.rdbuf();
-	return regex_match(cmpStream.str(),regex(fileFormat));
-}*/
-
-int numDePalavras(string const& str){
-    stringstream stream(str);
-    return distance(istream_iterator<string>(stream), istream_iterator<string>());
-}
 
 bool is_number(const string& s){
 	return !s.empty() && std::find_if(s.begin(),
@@ -66,7 +50,7 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	
 	jogador *jogadorAtual = getJogador(nome);				// Cria um ponteiro temporário para o jogador atual
 	erroAssert(jogadorAtual!=nullptr,"Jogador não encontrado");
-
+	jogadorAtual->setAposta(0);
 	if(!jogadorAtual->setAposta(tempInt, pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
 	premioDaRodada += tempInt;
@@ -96,6 +80,9 @@ void mesaDePoker::processaRodada(ofstream *output){
 		*output << 0 << " " << 0 << " " << "I" << endl;
 		rankVencedor="";
 		premioDaRodada=0;
+		for(int i=0; i<numJogadores; i++){
+			jogadores[i].setAposta(0);
+		}
 		return;
 	}
 
@@ -243,8 +230,6 @@ void mesaDePoker::processaJogo(char inputName[], char outputName[]){
 	ifstream inputFile(arqEntrada);
 	erroAssert(!inputFile.fail(), "Arquivo de entrada não pôde ser aberto");
 	ofstream outputFile(arqSaida);
-	
-	//erroAssert(isValidInput(arqEntrada), "Arquivo de entrada inválido.");
 
 	int nRodadas=0, nJogadas=0;
 	string linha;

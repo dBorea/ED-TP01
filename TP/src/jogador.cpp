@@ -60,7 +60,7 @@ void jogador::addCarta(string const& carta){
 /// @return true / false
 bool jogador::setAposta(int quantia, int pingo){
 	LEMEMLOG((long int)(&(dinheiro)),sizeof(int),id);
-	if(dinheiro - quantia + pingo >= 0){
+	if(dinheiro - (quantia + pingo) >= 0){
 		apostaADebitar = quantia;
 		ESCREVEMEMLOG((long int)(&(apostaADebitar)),sizeof(int),id);
 		return 1;
