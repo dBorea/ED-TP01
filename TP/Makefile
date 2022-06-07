@@ -1,5 +1,4 @@
 CXX = g++
-LIBS = 
 SRC = src
 OBJ = obj
 INC = include
@@ -11,15 +10,15 @@ EXECFILES = $(TEMP)/execfiles
 OBJS = $(OBJ)/pokerSim.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o $(OBJ)/memlog.o
 HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp $(INC)/memlog.hpp
 SANITIZE = #-fsanitize=undefined,address -static-libasan
-CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE)
-LDFLAGS = $(SANITIZE)
+CXXFLAGS = -Wall -c -I$(INC) -pg $(SANITIZE) -O3
+LDFLAGS = $(SANITIZE) -pg -O3
 ANALISAMEM = ../analisamem/bin/analisamem
 GENLOAD = ../geracargapoquer/bin/geracarga
 
 EXE = $(BIN)/tp1
 
 $(EXE): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $(EXE) $(OBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) -o $(EXE) $(OBJS)
 
 $(OBJ)/pokerSim.o: $(HDRS) $(SRC)/pokerSim.cpp
 	$(CXX) $(CXXFLAGS) -o $(OBJ)/pokerSim.o $(SRC)/pokerSim.cpp 
@@ -162,8 +161,8 @@ perf: $(EXE)
 	$(EXE) -p $(REGPERF)/5000rodadas1000jg.out -i $(EXECFILES)/entrada5000rodadas1000jg.txt -o $(EXECFILES)/saida5000rodadas1000jg.txt
 
 gprof: $(EXE)
-	$(EXE) -p $(REGPERF)/5000rodadas1000jg.out -i $(EXECFILES)/entrada5000rodadas1000jg.txt -o $(EXECFILES)/saida5000rodadas1000jg.txt
-	gprof $(EXE) gmon.out > $(REGPERF)/5000rodadas1000jggprof.txt
+	$(EXE) -p $(REGPERF)/1000rodadas100jg.out -i $(EXECFILES)/entrada1000rodadas100jg.txt -o $(EXECFILES)/saida1000rodadas100jg.txt
+	gprof $(EXE) gmon.out > $(REGPERF)/1000rodadas100jggprof.txt
 
 cleantemp: cleanperf cleanmem clean
 

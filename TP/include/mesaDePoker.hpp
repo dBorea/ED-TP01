@@ -39,7 +39,7 @@ class mesaDePoker{
 
 		jogador *getJogador(string const&) const;
 		bool possuiJogador(string const&) const; // Talvez não use
-		void analisaLinha(string const&, bool = false);
+		void analisaLinha(string const&, int = 0);
 		void processaRodada(ofstream*);
 		void ordenaJogadores();
 

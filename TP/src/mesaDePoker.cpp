@@ -27,7 +27,7 @@ bool mesaDePoker::possuiJogador(string const& nome) const{	// Talvez não use
 	return false;								// E 'false' caso contrário
 }
 
-void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
+void mesaDePoker::analisaLinha(string const& linha, int rodada){
 	istringstream stream(linha);
 	string nome("");
 	string tempString;
@@ -36,6 +36,14 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 	for(int i=0;; i++){		// Recebe o nome completo do jogador
 		stream >> tempString;
 		if (is_number(tempString)){
+			if(i==0){ // Garante que o número de jogadas da rodada foi informado corretamente
+				char erro[200] = {"O numero de jogadas da rodada "};
+				char intString[10];
+				sprintf(intString, "%d", rodada);
+				strcat(erro, intString);
+				strcat(erro, ((char*)" foi informado incorretamente."));
+				erroAssert(false,erro);
+			} 
 			tempInt = stoi(tempString);
 			break;
 		}
@@ -45,12 +53,16 @@ void mesaDePoker::analisaLinha(string const& linha, bool primeiraRodada){
 		}
 	}
 
-	if(primeiraRodada)										// Adiciona o jogador na lista caso seja a primeira rodada
+	if(rodada == 1)										// Adiciona o jogador na lista caso seja a primeira rodada
 		adicionaJogador(nome, dinheiroBase);
-	
+
 	jogador *jogadorAtual = getJogador(nome);				// Cria um ponteiro temporário para o jogador atual
 	erroAssert(jogadorAtual!=nullptr,"Jogador não encontrado");
+	LEMEMLOG((long int)(jogadorAtual),sizeof(jogador*),jogadorAtual->id);
+
 	jogadorAtual->setAposta(0);
+	if(tempInt%50 != 0 || tempInt == 0)
+		rodadaValida = false;
 	if(!jogadorAtual->setAposta(tempInt, pingo))			// Envia a aposta ao jogador e verifica a validez da mesma
 		rodadaValida = false;								// Caso a aposta seja inválida, também invalida a rodada
 	premioDaRodada += tempInt;
@@ -77,7 +89,7 @@ void mesaDePoker::escreveOutputRodada(ofstream *output, bool vencedores[], int n
 void mesaDePoker::processaRodada(ofstream *output){
 
 	if(!rodadaValida){
-		*output << 0 << " " << 0 << " " << "I" << endl;
+		*output << "0 0 I" << endl;
 		rankVencedor="";
 		premioDaRodada=0;
 		for(int i=0; i<numJogadores; i++){
@@ -194,7 +206,8 @@ void mesaDePoker::processaRodada(ofstream *output){
 			jogadores[i].premia(premioDaRodada/numVencedores);
 		}
 	}
-	
+
+	ordenaJogadores();
 	escreveOutputRodada(output, vencedores, numVencedores);
 
 }
@@ -206,6 +219,12 @@ void mesaDePoker::ordenaJogadores(){
 				jogador temp = jogadores[j];
 				jogadores[j] = jogadores[j+1];
 				jogadores[j+1] = temp;
+			} else if(jogadores[j].getDinheiro() == jogadores[j+1].getDinheiro()){
+				if(jogadores[j].getNome().compare(jogadores[j+1].getNome()) == 1){
+					jogador temp = jogadores[j];
+					jogadores[j] = jogadores[j+1];
+					jogadores[j+1] = temp;
+				}
 			}
 }
 
@@ -237,7 +256,8 @@ void mesaDePoker::processaJogo(char inputName[], char outputName[]){
 	
 	for(int i=0; i < nRodadas; i++){
 		inputFile >> nJogadas >> pingo;
-
+		if(pingo%50 != 0 || pingo == 0)
+			rodadaValida = false;
 		if(i==0) {
 			numJogadores = nJogadas;
 			jogadores = new jogador[numJogadores];
@@ -246,7 +266,7 @@ void mesaDePoker::processaJogo(char inputName[], char outputName[]){
 		for(int j=0; j < nJogadas; j++){
 			getline(inputFile, linha);
 			if(linha=="") getline(inputFile, linha);
-			analisaLinha(linha,(i==0));
+			analisaLinha(linha,(i+1));
 		}
 
 		for(int j=0; j < numJogadores; j++){
@@ -257,13 +277,12 @@ void mesaDePoker::processaJogo(char inputName[], char outputName[]){
 		}
 
 		processaRodada(&outputFile);
-		ordenaJogadores();
 		
 		limpaMaos();
 		rodadaValida = true;
 		premioDaRodada = 0;
 	}
-
+	ordenaJogadores();
 	escreveOutputFinal(&outputFile);
 	delete[] jogadores;
 	return;
