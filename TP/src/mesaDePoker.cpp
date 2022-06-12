@@ -81,7 +81,7 @@ void mesaDePoker::escreveOutputRodada(ofstream *output, bool vencedores[], int n
 			<< premioDaRodada/nVencedores << " "
 			<< rankVencedor << endl;
 	for (int i=0; i<numJogadores; i++){
-		if(vencedores[i]==true)
+		if(vencedores[jogadores[i].id]==true)
 			*output << jogadores[i].getNome() << endl;
 	}
 }
@@ -113,25 +113,25 @@ void mesaDePoker::processaRodada(ofstream *output){
 		rankAtual = jogadores[i].ranqueDaMao();
 		if(rankAtual > maiorRank){
 			for(int j=0; j<i; j++)
-				vencedores[j] = false;
+				vencedores[jogadores[j].id] = false;
 			maiorRank = rankAtual;
-			vencedores[i] = true;
+			vencedores[jogadores[i].id] = true;
 			numVencedores = 1;
 		} 
 		
 		else if (rankAtual == maiorRank){
-			vencedores[i] = true;
+			vencedores[jogadores[i].id] = true;
 			numVencedores++;
 		}
 	}
 	
 	if(numVencedores>1)
 		for(int i=0; i<numJogadores; i++){
-			if(vencedores[i]==true){
+			if(vencedores[jogadores[i].id]==true){
 				if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
 					for(int j=0; j<i; j++){
-						if(vencedores[j]==true){
-							vencedores[j] = false;
+						if(vencedores[jogadores[j].id]==true){
+							vencedores[jogadores[j].id] = false;
 							numVencedores--;
 						}
 					}
@@ -139,7 +139,7 @@ void mesaDePoker::processaRodada(ofstream *output){
 				} 
 				
 				else if(jogadores[i].getMaiorCartaDaJogada() < maiorCartaJogada){
-					vencedores[i] = false;
+					vencedores[jogadores[i].id] = false;
 					numVencedores --;
 				}
 			}
@@ -147,11 +147,11 @@ void mesaDePoker::processaRodada(ofstream *output){
 	
 	if(numVencedores>1)
 		for(int i=0; i<numJogadores; i++){
-			if(vencedores[i]==true){
+			if(vencedores[jogadores[i].id]==true){
 				if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
 					for(int j=0; j<i; j++){
-						if(vencedores[j]==true){
-							vencedores[j] = false;
+						if(vencedores[jogadores[j].id]==true){
+							vencedores[jogadores[j].id] = false;
 							numVencedores--;
 						}
 					}
@@ -159,7 +159,7 @@ void mesaDePoker::processaRodada(ofstream *output){
 				} 
 				
 				else if(jogadores[i].getMaiorCartaIsolada() < maiorCartaSolta){
-					vencedores[i] = false;
+					vencedores[jogadores[i].id] = false;
 					numVencedores --;
 				}
 			}
@@ -202,24 +202,24 @@ void mesaDePoker::processaRodada(ofstream *output){
 
 	for(int i=0; i<numJogadores; i++){
 
-		if(vencedores[i]==true){
+		if(vencedores[jogadores[i].id]==true){
 			jogadores[i].premia(premioDaRodada/numVencedores);
 		}
 	}
 
-	ordenaJogadores();
+	ordenaJogadores(orderByNome);
 	escreveOutputRodada(output, vencedores, numVencedores);
 
 }
 
-void mesaDePoker::ordenaJogadores(){
+void mesaDePoker::ordenaJogadores(orderCase caso){
 	for(int i=0; i<numJogadores-1; i++)
 		for(int j=0; j<numJogadores-i-1; j++)
-			if(jogadores[j].getDinheiro() < jogadores[j+1].getDinheiro()){
+			if(jogadores[j].getDinheiro() < jogadores[j+1].getDinheiro() && caso != orderByNome){
 				jogador temp = jogadores[j];
 				jogadores[j] = jogadores[j+1];
 				jogadores[j+1] = temp;
-			} else if(jogadores[j].getDinheiro() == jogadores[j+1].getDinheiro()){
+			} else if(jogadores[j].getDinheiro() == jogadores[j+1].getDinheiro() && caso != orderByDinheiro){
 				if(jogadores[j].getNome().compare(jogadores[j+1].getNome()) == 1){
 					jogador temp = jogadores[j];
 					jogadores[j] = jogadores[j+1];

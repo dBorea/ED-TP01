@@ -41,13 +41,14 @@ class jogador {
 		int apostaADebitar;
 		int maiorCartaIsolada;
 		int maiorCartaDaJogada;
+		bool vencedor;
 
 	public:
 		// Construtor vazio. Inicia nome como "" e dinheiro como '0'.
-		jogador() : nome(""), dinheiro(0), id(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
+		jogador() : nome(""), dinheiro(0), id(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false) {}
 		// Construtor simples
 		jogador(string _nome, int _dinheiro, int _id) : nome(_nome), dinheiro(_dinheiro), id(_id),
-											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0) {}
+											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false) {}
 		jogador& operator=(const jogador& outro);
 		void addCarta(string const&);
 
@@ -66,6 +67,13 @@ class jogador {
 		int getMaiorCartaDaJogada() const { 
 			LEMEMLOG((long int)(&maiorCartaDaJogada),sizeof(int),id);
 			return maiorCartaDaJogada; 
+		}
+
+		void setVencedor(bool input) { vencedor = input; }
+
+		bool isVencedor() const {
+			LEMEMLOG((long int)(&vencedor),sizeof(bool),id);
+			return vencedor;
 		}
 		int maiorCarta() const;
 		void premia(int input) { ESCREVEMEMLOG((long int)(&(dinheiro)),sizeof(int),id); dinheiro += input; }

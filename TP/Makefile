@@ -10,8 +10,8 @@ EXECFILES = $(TEMP)/execfiles
 OBJS = $(OBJ)/pokerSim.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o $(OBJ)/memlog.o
 HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp $(INC)/memlog.hpp
 SANITIZE = #-fsanitize=undefined,address -static-libasan
-CXXFLAGS = -Wall -c -I$(INC) -pg $(SANITIZE) -O3
-LDFLAGS = $(SANITIZE) -pg -O3
+CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE) 
+LDFLAGS = $(SANITIZE) -g 
 ANALISAMEM = ../analisamem/bin/analisamem
 GENLOAD = ../geracargapoquer/bin/geracarga
 
@@ -89,7 +89,7 @@ genload: $(GENLOAD)
 
 	$(GENLOAD) -o $(EXECFILES)/entrada1000rodadas900jg.txt -r 1000 -j 900 -v 0
 	$(GENLOAD) -o $(EXECFILES)/entrada2000rodadas900jg.txt -r 2000 -j 900 -v 0
-	$(GENLOAD) -o $(EXECFILES)/entrada3000rodadas900jg.txt -r 3000 -j 900 -v 0
+	$(GENLOAD) -o $(EXECFILES)/entrada3000rodadas900jg.txt -r 3000 -j 900 -
 	$(GENLOAD) -o $(EXECFILES)/entrada4000rodadas900jg.txt -r 4000 -j 900 -v 0
 	$(GENLOAD) -o $(EXECFILES)/entrada5000rodadas900jg.txt -r 5000 -j 900 -v 0
 

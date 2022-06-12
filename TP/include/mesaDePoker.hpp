@@ -11,6 +11,12 @@
 // Exemplo: na entrada "Giovanni Ferreira 100 6O 3P 10E 11O 1O", existem 8 palavras, 6 delas sendo argumentos.
 #define NUM_ARGS 6
 
+enum orderCase{
+	orderByDinheiro,
+	orderByNome,
+	orderByTudo
+};
+
 using std::fstream;
 using std::ifstream;
 using std::ofstream;
@@ -41,7 +47,7 @@ class mesaDePoker{
 		bool possuiJogador(string const&) const; // Talvez não use
 		void analisaLinha(string const&, int = 0);
 		void processaRodada(ofstream*);
-		void ordenaJogadores();
+		void ordenaJogadores(orderCase = orderByTudo);
 
 		void escreveOutputRodada(ofstream*, bool[], int);
 		void escreveOutputFinal(ofstream*);
