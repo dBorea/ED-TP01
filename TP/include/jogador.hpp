@@ -42,13 +42,15 @@ class jogador {
 		int maiorCartaIsolada;
 		int maiorCartaDaJogada;
 		bool vencedor;
+		int cartasIsoladas[NUM_CARTAS];
+		int cartasDaJogada[NUM_CARTAS];
 
 	public:
 		// Construtor vazio. Inicia nome como "" e dinheiro como '0'.
-		jogador() : nome(""), dinheiro(0), id(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false) {}
+		jogador() : nome(""), dinheiro(0), id(0), apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false), cartasIsoladas(), cartasDaJogada() {}
 		// Construtor simples
 		jogador(string _nome, int _dinheiro, int _id) : nome(_nome), dinheiro(_dinheiro), id(_id),
-											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false) {}
+											   		   apostaADebitar(0) , maiorCartaIsolada(0), maiorCartaDaJogada(0), vencedor(false), cartasIsoladas(), cartasDaJogada() {}
 		jogador& operator=(const jogador& outro);
 		void addCarta(string const&);
 

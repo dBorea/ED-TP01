@@ -99,7 +99,6 @@ void mesaDePoker::processaRodada(ofstream *output){
 	}
 
 	int numVencedores = 0;
-	int maiorCartaJogada = 0, maiorCartaSolta = 0;
 	bool vencedores[numJogadores] = {false};
 	rankings rankAtual = invalid;
 	rankings maiorRank = invalid;
@@ -126,41 +125,55 @@ void mesaDePoker::processaRodada(ofstream *output){
 	}
 	
 	if(numVencedores>1)
-		for(int i=0; i<numJogadores; i++){
-			if(vencedores[jogadores[i].id]==true){
-				if(jogadores[i].getMaiorCartaDaJogada() > maiorCartaJogada){
-					for(int j=0; j<i; j++){
-						if(vencedores[jogadores[j].id]==true){
-							vencedores[jogadores[j].id] = false;
-							numVencedores--;
-						}
+		for(int n=0; n<NUM_CARTAS; n++){
+			int cartasVencedores[numJogadores] = {0};
+			for(int i=0; i<numJogadores; i++){
+				if(vencedores[jogadores[i].id]==true)
+					cartasVencedores[jogadores[i].id] = jogadores[i].cartasDaJogada[n];
+			}
+
+			int maiorCarta = 0;
+			for(int i=0; i<numJogadores; i++){
+				if(vencedores[jogadores[i].id]){
+					if(cartasVencedores[jogadores[i].id] > maiorCarta){
+						for(int j=0; j<i; j++)
+							if(vencedores[jogadores[j].id]){
+								vencedores[jogadores[j].id] = false;
+								numVencedores--;
+							}
+
+						maiorCarta = cartasVencedores[jogadores[i].id];
+					} else if(cartasVencedores[jogadores[i].id] < maiorCarta){
+						vencedores[jogadores[i].id] = false;
+						numVencedores--;
 					}
-					maiorCartaJogada = jogadores[i].getMaiorCartaDaJogada();
-				} 
-				
-				else if(jogadores[i].getMaiorCartaDaJogada() < maiorCartaJogada){
-					vencedores[jogadores[i].id] = false;
-					numVencedores --;
 				}
 			}
 		}
 	
 	if(numVencedores>1)
-		for(int i=0; i<numJogadores; i++){
-			if(vencedores[jogadores[i].id]==true){
-				if(jogadores[i].getMaiorCartaIsolada() > maiorCartaSolta){
-					for(int j=0; j<i; j++){
-						if(vencedores[jogadores[j].id]==true){
-							vencedores[jogadores[j].id] = false;
-							numVencedores--;
-						}
+		for(int n=0; n<NUM_CARTAS; n++){
+			int cartasVencedores[numJogadores] = {0};
+			for(int i=0; i<numJogadores; i++){
+				if(vencedores[jogadores[i].id]==true)
+					cartasVencedores[jogadores[i].id] = jogadores[i].cartasIsoladas[n];
+			}
+
+			int maiorCarta = 0;
+			for(int i=0; i<numJogadores; i++){
+				if(vencedores[jogadores[i].id]){
+					if(cartasVencedores[jogadores[i].id] > maiorCarta){
+						for(int j=0; j<i; j++)
+							if(vencedores[jogadores[j].id]){
+								vencedores[jogadores[j].id] = false;
+								numVencedores--;
+							}
+
+						maiorCarta = cartasVencedores[jogadores[i].id];
+					} else if(cartasVencedores[jogadores[i].id] < maiorCarta){
+						vencedores[jogadores[i].id] = false;
+						numVencedores--;
 					}
-					maiorCartaSolta = jogadores[i].getMaiorCartaIsolada();
-				} 
-				
-				else if(jogadores[i].getMaiorCartaIsolada() < maiorCartaSolta){
-					vencedores[jogadores[i].id] = false;
-					numVencedores --;
 				}
 			}
 		}

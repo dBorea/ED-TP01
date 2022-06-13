@@ -70,7 +70,7 @@ bool jogador::setAposta(int quantia, int pingo){
 
 bool jogador::cobraPingo(int pingo){
 	LEMEMLOG((long int)(&(dinheiro)),sizeof(int),id);
-	if(dinheiro - pingo >= 0){
+	if(dinheiro - pingo > 0){
 		ESCREVEMEMLOG((long int)(&(apostaADebitar)),sizeof(int),id);
 		apostaADebitar += pingo;
 		return true;
@@ -146,6 +146,8 @@ repCounters jogador::numRepetidas(){
 	short combo;
 	bool identificada[NUM_CARTAS] = {0};
 	int combos[NUM_CARTAS] {0};
+	int numIsoladas = 0;
+	int numDaJogada = 0;
 
 	for(int i=0; i<NUM_CARTAS; i++){
 		combo = 0;
@@ -162,21 +164,31 @@ repCounters jogador::numRepetidas(){
 			}
 			LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
 			if(combo==1){
+				cartasIsoladas[numIsoladas++]=mao[i].getNum();
 				if(mao[i].getNum() > maiorCartaIsolada){
 					ESCREVEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
 					maiorCartaIsolada = mao[i].getNum();
 				}
 				if(mao[i].getNum() == 1){
+					for(int k=NUM_CARTAS-1; k>0; k--){
+						cartasIsoladas[k]=cartasIsoladas[k-1];
+					}
+					cartasIsoladas[0]=14;
 					maiorCartaIsolada = 14;
 				}
 			}
 			LEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
 			if(combo!=1){
+				cartasDaJogada[numDaJogada++]=mao[i].getNum();
 				if(mao[i].getNum() > maiorCartaDaJogada){
 					ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
 					maiorCartaDaJogada = mao[i].getNum();
 				}
 				if(mao[i].getNum() == 1){
+					for(int k=NUM_CARTAS-1; k>0; k--){
+						cartasDaJogada[k]=cartasDaJogada[k-1];
+					}
+					cartasDaJogada[0]=14;
 					maiorCartaDaJogada = 14;
 				}
 			}
@@ -190,6 +202,25 @@ repCounters jogador::numRepetidas(){
 										return par;
 	}
 	if(combos[trinca]) return trinca;
+
+	maiorCartaDaJogada = maiorCartaIsolada;
+	cartasDaJogada[0] = maiorCartaDaJogada;
+	if(maiorCartaIsolada==14) {
+		for(int i=NUM_CARTAS-1; i>=0; i--){
+			if(cartasIsoladas[i]!=0){
+				cartasIsoladas[i]=0;
+				break;
+			}
+		}
+		maiorCartaIsolada = mao[0].getNum();
+	} else {
+		for(int i=0; i<NUM_CARTAS; i++){
+			cartasIsoladas[i] = cartasIsoladas[i+1];
+		}
+		cartasIsoladas[4]=0;
+		maiorCartaIsolada = mao[0].getNum();
+	}
+
 	return unica;
 }
 
@@ -242,6 +273,8 @@ void jogador::limpaMao(){
 		ESCREVEMEMLOG((long int)(&(mao[i].numero)),sizeof(int),id);
 		mao[i].setNaipe("");
 		mao[i].setNum(0);
+		cartasIsoladas[i] = 0;
+		cartasDaJogada[i] = 0;
 	}
 	ESCREVEMEMLOG((long int)(&(maiorCartaDaJogada)),sizeof(int),id);
 	ESCREVEMEMLOG((long int)(&(maiorCartaIsolada)),sizeof(int),id);
