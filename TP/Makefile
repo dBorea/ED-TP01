@@ -10,12 +10,12 @@ EXECFILES = $(TEMP)/execfiles
 OBJS = $(OBJ)/pokerSim.o $(OBJ)/jogador.o $(OBJ)/mesaDePoker.o $(OBJ)/memlog.o
 HDRS = $(INC)/msgassert.hpp $(INC)/cartaDeBaralho.hpp $(INC)/jogador.hpp $(INC)/mesaDePoker.hpp $(INC)/memlog.hpp
 SANITIZE = #-fsanitize=undefined,address -static-libasan
-CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE) 
-LDFLAGS = $(SANITIZE) -g 
+CXXFLAGS = -Wall -c -I$(INC) -g $(SANITIZE) -O3
+LDFLAGS = $(SANITIZE) -g -O3
 ANALISAMEM = ../analisamem/bin/analisamem
 GENLOAD = ../geracargapoquer/bin/geracarga
 
-EXE = $(BIN)/tp1
+EXE = $(BIN)/tp1.exe
 
 $(EXE): $(OBJS)
 	$(CXX) $(LDFLAGS) -o $(EXE) $(OBJS)

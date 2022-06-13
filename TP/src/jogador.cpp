@@ -214,7 +214,7 @@ repCounters jogador::numRepetidas(){
 		}
 		maiorCartaIsolada = mao[0].getNum();
 	} else {
-		for(int i=0; i<NUM_CARTAS; i++){
+		for(int i=0; i<NUM_CARTAS-1; i++){
 			cartasIsoladas[i] = cartasIsoladas[i+1];
 		}
 		cartasIsoladas[4]=0;

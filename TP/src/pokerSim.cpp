@@ -26,13 +26,12 @@ void instrucoes(){
 	cout << "Se houver uma mensagem de erro, a saída é inválida e deve ser descartada." << endl;
 }
 
-bool parseArgs(int argc, char *argv[], char logname[], char inputname[], char outputname[]){
+bool parseArgs(int argc, char *argv[], char logname[], char inputname[], char outputname[], bool &optReg){
 	extern char *optarg;
 	//extern int optind;
 	logname[0] = 0;
 	inputname[0] = 0;
 	outputname[0] = 0;
-	bool optReg = false;
 	bool optInput = false;
 	bool optOutput = false;
 	bool regmem = false;
@@ -71,8 +70,7 @@ bool parseArgs(int argc, char *argv[], char logname[], char inputname[], char ou
 	}
 
 	if(optReg == false){
-		if(regmem) 	strcpy(logname, "../temp/regmem/log.out");
-		else 		strcpy(logname, "../temp/regperf/log.out");
+		regmem = false;
 	} 
 	if(optInput == false) strcpy(inputname, "entrada.txt");
 	if(optOutput == false) strcpy(outputname, "saida.txt");
@@ -81,9 +79,11 @@ bool parseArgs(int argc, char *argv[], char logname[], char inputname[], char ou
 
 int main(int argc, char *argv[]){
 	char logname[100], inputname[100], outputname[100];
-	bool regmem = parseArgs(argc, argv, logname, inputname, outputname);
+	bool optReg;
+	bool regmem = parseArgs(argc, argv, logname, inputname, outputname, optReg);
 	
-	iniciaMemLog(logname);
+	if(optReg)
+		iniciaMemLog(logname);
 	if(regmem)
 		ativaMemLog();
 	else 
@@ -92,5 +92,5 @@ int main(int argc, char *argv[]){
 	mesaDePoker mesa;
 	mesa.processaJogo(inputname, outputname);
 
-	return finalizaMemLog();
+	return (optReg)? finalizaMemLog() : 0;
 }
